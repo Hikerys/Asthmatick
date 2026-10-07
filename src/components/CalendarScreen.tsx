@@ -109,10 +109,10 @@ export function CalendarScreen({
         title: att.trigger || "Приступ астмы",
         subtitle:
           att.severity === "light"
-            ? "Легкая одышка"
+            ? "Легкое"
             : att.severity === "medium"
-            ? "Выраженная одышка"
-            : "Удушье",
+            ? "Среднее"
+            : "Тяжелое",
         severity: att.severity,
         completed: att.completed ?? true,
         raw: att,
@@ -311,7 +311,17 @@ export function CalendarScreen({
                     )}
                   </b>
                   <div>{item.title}</div>
-                  {item.subtitle && <em>{item.subtitle}</em>}
+                  {item.subtitle && (
+                    <em
+                      className={
+                        isAttack && item.severity
+                          ? `sev-text sev-${item.severity}`
+                          : undefined
+                      }
+                    >
+                      {item.subtitle}
+                    </em>
+                  )}
                 </div>
 
                 {isSchedule && (

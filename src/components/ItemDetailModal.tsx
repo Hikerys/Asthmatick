@@ -105,18 +105,18 @@ export function ItemDetailModal({
                   color: "#0f2b46",
                 }}
               >
-                {item.severity === "light" && "Легкая одышка"}
-                {item.severity === "medium" && "Выраженная одышка"}
-                {item.severity === "heavy" && "Удушье"}
+                {item.severity === "light" && "Легкое (Легкая одышка)"}
+                {item.severity === "medium" && "Среднее (Выраженная одышка)"}
+                {item.severity === "heavy" && "Тяжелое (Удушье)"}
               </div>
             </div>
           )}
 
-          {item.subtitle && (
+          {(isAttack ? item.raw.note : item.subtitle) && (
             <div style={{ marginBottom: "12px" }}>
               <div className="form-label">Примечание / Описание</div>
               <div style={{ fontSize: "15px", color: "var(--text)", lineHeight: 1.4 }}>
-                {item.subtitle}
+                {isAttack ? item.raw.note : item.subtitle}
               </div>
             </div>
           )}

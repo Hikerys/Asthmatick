@@ -343,6 +343,41 @@ main {
   text-overflow: ellipsis;
 }
 
+.card .t em.sev-text {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.card .t em.sev-light {
+  color: #c48208;
+}
+
+.card .t em.sev-medium {
+  color: #ea650d;
+}
+
+.card .t em.sev-heavy {
+  color: #e54845;
+}
+
+[data-theme="dark"] .card .t em.sev-light,
+html.dark .card .t em.sev-light,
+body.dark .card .t em.sev-light {
+  color: #f9e46b;
+}
+
+[data-theme="dark"] .card .t em.sev-medium,
+html.dark .card .t em.sev-medium,
+body.dark .card .t em.sev-medium {
+  color: #f8b04b;
+}
+
+[data-theme="dark"] .card .t em.sev-heavy,
+html.dark .card .t em.sev-heavy,
+body.dark .card .t em.sev-heavy {
+  color: #f06a68;
+}
+
 .card > svg {
   flex: none;
   width: 22px;

@@ -525,7 +525,7 @@ export function SettingsScreen({
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
               <span style={{ color: "var(--sub)" }}>Версия:</span>
-              <b>1.0.0</b>
+              <b>1.0.1</b>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "var(--sub)" }}>Хранение данных:</span>

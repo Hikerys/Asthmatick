@@ -5,7 +5,7 @@ export function Header() {
     <header>
       <svg><use href="#lungs" /></svg>
       <h1>Asthmatick</h1>
-      <span>v1.0.0</span>
+      <span>v1.0.1</span>
     </header>
   );
 }
