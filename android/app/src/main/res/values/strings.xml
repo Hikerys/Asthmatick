@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Asthmatick</string>
+    <string name="title_activity_main">Asthmatick</string>
+    <string name="package_name">app.asthma.tick</string>
+    <string name="custom_url_scheme">app.asthma.tick</string>
+</resources>
