@@ -16,8 +16,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (file('asthmatick-release.keystore').exists()) {
+                storeFile file('asthmatick-release.keystore')
+                storePassword System.getenv("KEYSTORE_PASSWORD") ?: "asthmatick2026"
+                keyAlias System.getenv("KEY_ALIAS") ?: "asthmatick"
+                keyPassword System.getenv("KEY_PASSWORD") ?: "asthmatick2026"
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
+    }
     buildTypes {
         release {
+            if (file('asthmatick-release.keystore').exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
