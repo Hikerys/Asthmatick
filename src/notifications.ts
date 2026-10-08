@@ -1,27 +1,35 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { ScheduleEvent } from "./types";
 
-const REMINDER_CHANNEL_ID = "asthmatick_reminders";
+export const REMINDER_CHANNEL_ID = "asthmatick_reminders_v2";
 
 /**
  * Initializes and registers high-priority notification channel on Android.
- * Importance 5 ensures heads-up display, sound, and vibration even during standby.
+ * Android channels accept importance from 0 to 4 (4 = IMPORTANCE_HIGH).
+ * Level 4 guarantees sound, vibration, and heads-up banner display.
+ * (Level 5 is invalid in Android and throws IllegalArgumentException).
  */
 export async function setupNotificationChannel(): Promise<void> {
   try {
+    // Delete legacy/corrupted channel if it exists
+    try {
+      await LocalNotifications.deleteChannel({ id: "asthmatick_reminders" });
+    } catch {
+      // ignore
+    }
+
     await LocalNotifications.createChannel({
       id: REMINDER_CHANNEL_ID,
       name: "Напоминания Asthmatick",
       description: "Напоминания о приёме лекарств и ингаляций",
-      importance: 5, // MAX importance on Android (heads-up notification)
+      importance: 4, // IMPORTANCE_HIGH (4) on Android: heads-up banner, sound, vibration
       visibility: 1, // VISIBILITY_PUBLIC (shows on lockscreen)
       vibration: true,
       lights: true,
       lightColor: "#168B7A",
     });
   } catch (err) {
-    // Web or channels not supported on this platform
-    console.debug("setupNotificationChannel:", err);
+    console.warn("setupNotificationChannel error:", err);
   }
 }
 
@@ -42,21 +50,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
   try {
     await setupNotificationChannel();
     const status = await LocalNotifications.requestPermissions();
-    const granted = status.display === "granted";
-
-    // On Android 12+, check if exact alarms are allowed
-    if (granted) {
-      try {
-        const exact = await LocalNotifications.checkExactNotificationSetting();
-        if (exact.exact_alarm === "prompt" || exact.exact_alarm === "denied") {
-          await LocalNotifications.changeExactNotificationSetting();
-        }
-      } catch (e) {
-        // Ignored on non-Android or older versions
-      }
-    }
-
-    return granted;
+    return status.display === "granted";
   } catch (err) {
     if ("Notification" in window) {
       const res = await Notification.requestPermission();
@@ -66,6 +60,10 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 }
 
+/**
+ * Checks whether Android allows exact alarms (SCHEDULE_EXACT_ALARM).
+ * On Android < 12, always returns true.
+ */
 export async function checkExactAlarmPermission(): Promise<boolean> {
   try {
     const exact = await LocalNotifications.checkExactNotificationSetting();
@@ -75,6 +73,9 @@ export async function checkExactAlarmPermission(): Promise<boolean> {
   }
 }
 
+/**
+ * Opens system settings screen for Exact Alarms ("Будильники и напоминания").
+ */
 export async function openExactAlarmSettings(): Promise<void> {
   try {
     await LocalNotifications.changeExactNotificationSetting();
@@ -87,6 +88,7 @@ export async function sendTestNotification(): Promise<void> {
   await setupNotificationChannel();
 
   try {
+    // Schedule immediate notification without waiting for alarm manager
     await LocalNotifications.schedule({
       notifications: [
         {
@@ -95,11 +97,6 @@ export async function sendTestNotification(): Promise<void> {
           id: Math.floor(Math.random() * 100000) + 1,
           channelId: REMINDER_CHANNEL_ID,
           foreground: true,
-          isExactNotification: true,
-          schedule: {
-            at: new Date(Date.now() + 50),
-            allowWhileIdle: true,
-          },
           actionTypeId: "",
           extra: null,
         },
@@ -116,25 +113,52 @@ export async function sendTestNotification(): Promise<void> {
   }
 }
 
-export async function syncScheduleNotifications(events: ScheduleEvent[]): Promise<void> {
+export async function clearAllNotifications(): Promise<void> {
   try {
-    await setupNotificationChannel();
-
-    // Cancel all previous scheduled notifications
+    await LocalNotifications.cancelAll();
+  } catch (err) {
     try {
-      await LocalNotifications.cancelAll();
-    } catch (e) {
       const pending = await LocalNotifications.getPending();
       if (pending.notifications.length > 0) {
         await LocalNotifications.cancel({ notifications: pending.notifications });
       }
+    } catch {
+      // ignore
     }
+  }
+}
+
+/**
+ * Stable, deterministic 32-bit positive integer ID for notification per event and day
+ */
+function getDeterministicNotificationId(eventId: string, dayOfWeek: number): number {
+  let hash = 0;
+  for (let i = 0; i < eventId.length; i++) {
+    hash = (hash << 5) - hash + eventId.charCodeAt(i);
+    hash |= 0;
+  }
+  return (Math.abs(hash) % 100000) * 10 + dayOfWeek;
+}
+
+export async function syncScheduleNotifications(events: ScheduleEvent[]): Promise<void> {
+  try {
+    await setupNotificationChannel();
 
     const hasPermission = await checkNotificationPermission();
-    if (!hasPermission) return;
+    if (!hasPermission) {
+      await clearAllNotifications();
+      return;
+    }
 
+    // Cancel previously scheduled alarms before re-registering
+    await clearAllNotifications();
+
+    if (events.length === 0) {
+      return;
+    }
+
+    const hasExact = await checkExactAlarmPermission();
     const notifs = [];
-    let idCounter = 1000;
 
     for (const ev of events) {
       const [hStr, mStr] = ev.time.split(":");
@@ -144,23 +168,25 @@ export async function syncScheduleNotifications(events: ScheduleEvent[]): Promis
       if (isNaN(hours) || isNaN(minutes)) continue;
 
       for (const dayOfWeek of ev.days) {
-        idCounter++;
         // Capacitor weekday: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
         const capacitorWeekday = dayOfWeek === 7 ? 1 : dayOfWeek + 1;
+        const notifId = getDeterministicNotificationId(ev.id, dayOfWeek);
 
         notifs.push({
           title: "Asthmatick: Время по плану",
           body: ev.title + (ev.note ? ` (${ev.note})` : ""),
-          id: idCounter,
+          id: notifId,
           channelId: REMINDER_CHANNEL_ID,
           foreground: true,
-          isExactNotification: true,
+          // Only flag isExactNotification if permission is granted to prevent unwanted settings jumps
+          isExactNotification: hasExact,
           isExactMandatory: false,
           schedule: {
             on: {
-              weekday: capacitorWeekday,
+              weekday: capacitorWeekday as any,
               hour: hours,
               minute: minutes,
+              second: 0, // Explicitly 0 seconds to avoid arbitrary minute-offset drift
             },
             repeats: true,
             allowWhileIdle: true, // Guarantees wake-up even in Doze/standby

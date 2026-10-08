@@ -12,7 +12,6 @@ const config: CapacitorConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_lungs",
       iconColor: "#168B7A",
-      sound: "beep.wav",
     },
   },
 };

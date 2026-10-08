@@ -9,7 +9,10 @@ import {
   loadNotes,
 } from "../storage";
 import {
+  checkNotificationPermission,
   requestNotificationPermission,
+  checkExactAlarmPermission,
+  openExactAlarmSettings,
   sendTestNotification,
 } from "../notifications";
 import { exportDatabaseFile } from "../filePickerExport";
@@ -34,6 +37,27 @@ export function SettingsScreen({
   const [notificationGranted, setNotificationGranted] = useState(
     settings.notificationsEnabled
   );
+  const [exactAlarmGranted, setExactAlarmGranted] = useState(true);
+
+  const refreshPermissions = async () => {
+    const notif = await checkNotificationPermission();
+    const exact = await checkExactAlarmPermission();
+    setNotificationGranted(notif);
+    setExactAlarmGranted(exact);
+  };
+
+  React.useEffect(() => {
+    refreshPermissions();
+    const handleFocus = () => {
+      refreshPermissions();
+    };
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleFocus);
+    };
+  }, []);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [importJsonText, setImportJsonText] = useState("");
@@ -117,6 +141,8 @@ export function SettingsScreen({
     if (!notificationGranted) {
       const granted = await requestNotificationPermission();
       setNotificationGranted(granted);
+      const exact = await checkExactAlarmPermission();
+      setExactAlarmGranted(exact);
       const updated: AppSettings = { ...settings, notificationsEnabled: granted };
       saveSettings(updated);
       onUpdateSettings(updated);
@@ -307,11 +333,11 @@ export function SettingsScreen({
             </span>
           </div>
 
-          {/* Recommendation banner */}
+          {/* Exact Alarm status & guidance on Android */}
           <div
             style={{
-              background: "var(--tint)",
-              border: "1.5px solid var(--border)",
+              background: exactAlarmGranted ? "var(--tint)" : "#fff7ed",
+              border: `1.5px solid ${exactAlarmGranted ? "var(--border)" : "#fdba74"}`,
               borderRadius: "16px",
               padding: "14px",
               marginTop: "12px",
@@ -319,9 +345,59 @@ export function SettingsScreen({
             }}
           >
             <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ fontSize: "20px", lineHeight: 1 }}>
+                {exactAlarmGranted ? "⏱️" : "⚠️"}
+              </span>
+              <div style={{ fontSize: "13px", lineHeight: 1.45, color: "var(--text)", flex: 1 }}>
+                <strong>
+                  {exactAlarmGranted
+                    ? "Точные напоминания активны"
+                    : "Точные будильники не разрешены"}
+                </strong>
+                <div style={{ marginTop: "4px", color: exactAlarmGranted ? "var(--sub)" : "#9a3412" }}>
+                  {exactAlarmGranted
+                    ? "Напоминания доставляются точно минута в минуту, даже в режиме энергосбережения и блокировки."
+                    : "Без разрешения «Будильники и напоминания» Android задерживает оповещения от 15 минут до нескольких часов в целях экономии батареи."}
+                </div>
+                {!exactAlarmGranted && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await openExactAlarmSettings();
+                    }}
+                    className="btn-secondary"
+                    style={{
+                      marginTop: "10px",
+                      width: "100%",
+                      fontSize: "13px",
+                      padding: "8px 12px",
+                      background: "#ea580c",
+                      color: "#fff",
+                      borderColor: "#ea580c",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Разрешить «Будильники и напоминания»
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Recommendation banner for battery optimization */}
+          <div
+            style={{
+              background: "var(--tint)",
+              border: "1.5px solid var(--border)",
+              borderRadius: "16px",
+              padding: "14px",
+              marginBottom: "12px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
               <span style={{ fontSize: "20px", lineHeight: 1 }}>💡</span>
               <div style={{ fontSize: "13px", lineHeight: 1.45, color: "var(--text)" }}>
-                <strong>Рекомендация:</strong> Для корректной и своевременной работы напоминаний рекомендуется разрешить приложению работать в фоне (отключить оптимизацию батареи / ограничение фоновой активности для Asthmatick в настройках телефона).
+                <strong>Фоновая работа:</strong> Чтобы Android (особенно на устройствах Xiaomi, Samsung, Huawei) не откладывал напоминания, отключите «Оптимизацию батареи» и разрешите автозапуск / фоновую активность для Asthmatick в настройках телефона.
               </div>
             </div>
           </div>
@@ -525,7 +601,7 @@ export function SettingsScreen({
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
               <span style={{ color: "var(--sub)" }}>Версия:</span>
-              <b>1.0.1</b>
+              <b>1.0.2</b>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "var(--sub)" }}>Хранение данных:</span>

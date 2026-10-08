@@ -207,7 +207,7 @@ export function getScheduleStatusInfo(
 // Export full backup
 export function createDatabaseBackup(): DatabaseBackup {
   return {
-    version: "1.0.1",
+    version: "1.0.2",
     exportDate: new Date().toISOString(),
     packageId: "app.asthma.tick",
     scheduleEvents: loadScheduleEvents(),

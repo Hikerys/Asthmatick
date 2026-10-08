@@ -18,7 +18,7 @@ import {
   formatDateKey,
   getScheduleStatusInfo,
 } from "./storage";
-import { syncScheduleNotifications } from "./notifications";
+import { syncScheduleNotifications, clearAllNotifications } from "./notifications";
 import { Header } from "./components/Header";
 import { BottomNav, NavTab } from "./components/BottomNav";
 import { MyDayScreen } from "./components/MyDayScreen";
@@ -102,11 +102,28 @@ export function App() {
     };
   }, []);
 
-  // Sync notifications when schedule changes
+  // Sync notifications when schedule or settings change
   useEffect(() => {
     if (settings.notificationsEnabled) {
       syncScheduleNotifications(scheduleEvents);
+    } else {
+      clearAllNotifications();
     }
+  }, [scheduleEvents, settings.notificationsEnabled]);
+
+  // Re-sync notifications when app resumes from background or settings
+  useEffect(() => {
+    const handleResume = () => {
+      if (document.visibilityState === "visible" && settings.notificationsEnabled) {
+        syncScheduleNotifications(scheduleEvents);
+      }
+    };
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleResume);
+    return () => {
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleResume);
+    };
   }, [scheduleEvents, settings.notificationsEnabled]);
 
   const refreshAllData = () => {
