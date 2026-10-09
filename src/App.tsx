@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { App as CapApp } from "@capacitor/app";
 import {
   ScheduleEvent,
   AttackRecord,
@@ -19,6 +20,7 @@ import {
   getScheduleStatusInfo,
 } from "./storage";
 import { syncScheduleNotifications, clearAllNotifications } from "./notifications";
+import { triggerBack } from "./navigation";
 import { Header } from "./components/Header";
 import { BottomNav, NavTab } from "./components/BottomNav";
 import { MyDayScreen } from "./components/MyDayScreen";
@@ -40,6 +42,7 @@ export function App() {
   const [notes, setNotes] = useState<NoteRecord[]>(() => loadNotes());
 
   const [currentTab, setCurrentTab] = useState<NavTab>("myday");
+  const [tabHistory, setTabHistory] = useState<NavTab[]>(["myday"]);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(
     () => !settings.hasSeenOnboarding
@@ -68,6 +71,79 @@ export function App() {
 
   // Item being edited
   const [editingItem, setEditingItem] = useState<TimelineItem | null>(null);
+
+  // Navigation tab selection
+  const handleSelectTab = (tab: NavTab) => {
+    if (tab === currentTab) return;
+    if (tab === "myday") {
+      setTabHistory(["myday"]);
+    } else {
+      setTabHistory((prev) => [...prev.filter((t) => t !== tab), tab]);
+    }
+    setCurrentTab(tab);
+  };
+
+  // Back action: closes top window/modal, or navigates back to previous section / myday, or exits
+  const handleGoBack = useCallback(() => {
+    // 1. Try modal back handlers (ModalSheet)
+    const handled = triggerBack();
+    if (handled) return;
+
+    // 2. Tab navigation back
+    if (tabHistory.length > 1) {
+      const next = [...tabHistory];
+      next.pop();
+      const prevTab = next[next.length - 1] || "myday";
+      setTabHistory(next);
+      setCurrentTab(prevTab);
+      return;
+    }
+
+    if (currentTab !== "myday") {
+      setTabHistory(["myday"]);
+      setCurrentTab("myday");
+      return;
+    }
+
+    // 3. At root tab with no modals: exit app on Android
+    CapApp.exitApp();
+  }, [currentTab, tabHistory]);
+
+  // Android hardware / gesture back button handler
+  useEffect(() => {
+    let removeListener: (() => void) | undefined;
+    CapApp.addListener("backButton", () => {
+      handleGoBack();
+    }).then((handle) => {
+      removeListener = () => handle.remove();
+    });
+
+    return () => {
+      if (removeListener) removeListener();
+    };
+  }, [handleGoBack]);
+
+  // Screen horizontal swipe right gesture to go back (from section to home)
+  const screenSwipeStartXRef = useRef(0);
+  const screenSwipeStartYRef = useRef(0);
+  const screenSwipeStartTimeRef = useRef(0);
+
+  const handleScreenTouchStart = (e: React.TouchEvent) => {
+    screenSwipeStartXRef.current = e.touches[0].clientX;
+    screenSwipeStartYRef.current = e.touches[0].clientY;
+    screenSwipeStartTimeRef.current = Date.now();
+  };
+
+  const handleScreenTouchEnd = (e: React.TouchEvent) => {
+    const deltaX = e.changedTouches[0].clientX - screenSwipeStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - screenSwipeStartYRef.current;
+    const elapsed = Date.now() - screenSwipeStartTimeRef.current;
+
+    // Swipe right across screen: back gesture
+    if (deltaX > 75 && deltaX > Math.abs(deltaY) * 1.4 && elapsed < 450) {
+      handleGoBack();
+    }
+  };
 
   // Sync theme attribute and class to HTML root and body
   useEffect(() => {
@@ -105,17 +181,17 @@ export function App() {
   // Sync notifications when schedule or settings change
   useEffect(() => {
     if (settings.notificationsEnabled) {
-      syncScheduleNotifications(scheduleEvents);
+      syncScheduleNotifications(scheduleEvents, settings.notificationSound || "system");
     } else {
       clearAllNotifications();
     }
-  }, [scheduleEvents, settings.notificationsEnabled]);
+  }, [scheduleEvents, settings.notificationsEnabled, settings.notificationSound]);
 
   // Re-sync notifications when app resumes from background or settings
   useEffect(() => {
     const handleResume = () => {
       if (document.visibilityState === "visible" && settings.notificationsEnabled) {
-        syncScheduleNotifications(scheduleEvents);
+        syncScheduleNotifications(scheduleEvents, settings.notificationSound || "system");
       }
     };
     window.addEventListener("focus", handleResume);
@@ -305,15 +381,19 @@ export function App() {
   return (
     <div className="app" id="app">
       {/* Onboarding Dialog */}
-      {showOnboarding && (
-        <OnboardingModal onComplete={handleCompleteOnboarding} />
-      )}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onComplete={handleCompleteOnboarding}
+      />
 
       {/* Main Header */}
       <Header />
 
       {/* Screen Views */}
-      <main>
+      <main
+        onTouchStart={handleScreenTouchStart}
+        onTouchEnd={handleScreenTouchEnd}
+      >
         {currentTab === "myday" && (
           <MyDayScreen
             scheduleEvents={scheduleEvents}
@@ -360,7 +440,7 @@ export function App() {
       {/* Bottom Navigation */}
       <BottomNav
         currentTab={currentTab}
-        onSelectTab={(tab) => setCurrentTab(tab)}
+        onSelectTab={handleSelectTab}
       />
 
       {/* FAB Popup menu */}
@@ -374,54 +454,48 @@ export function App() {
       />
 
       {/* Add / Edit Schedule Modal */}
-      {activeModal === "schedule" && (
-        <AddScheduleModal
-          initial={
-            editingItem?.type === "schedule" ? editingItem.raw : null
-          }
-          onClose={() => {
-            setActiveModal("none");
-            setEditingItem(null);
-          }}
-          onSave={handleSaveSchedule}
-        />
-      )}
+      <AddScheduleModal
+        isOpen={activeModal === "schedule"}
+        initial={editingItem?.type === "schedule" ? editingItem.raw : null}
+        onClose={() => {
+          setActiveModal("none");
+          setEditingItem(null);
+        }}
+        onSave={handleSaveSchedule}
+      />
 
       {/* Add / Edit Attack Modal */}
-      {activeModal === "attack" && (
-        <AddAttackModal
-          initial={editingItem?.type === "attack" ? editingItem.raw : null}
-          onClose={() => {
-            setActiveModal("none");
-            setEditingItem(null);
-          }}
-          onSave={handleSaveAttack}
-        />
-      )}
+      <AddAttackModal
+        isOpen={activeModal === "attack"}
+        initial={editingItem?.type === "attack" ? editingItem.raw : null}
+        onClose={() => {
+          setActiveModal("none");
+          setEditingItem(null);
+        }}
+        onSave={handleSaveAttack}
+      />
 
       {/* Add / Edit Note Modal */}
-      {activeModal === "note" && (
-        <AddNoteModal
-          initial={editingItem?.type === "note" ? editingItem.raw : null}
-          onClose={() => {
-            setActiveModal("none");
-            setEditingItem(null);
-          }}
-          onSave={handleSaveNote}
-        />
-      )}
+      <AddNoteModal
+        isOpen={activeModal === "note"}
+        initial={editingItem?.type === "note" ? editingItem.raw : null}
+        onClose={() => {
+          setActiveModal("none");
+          setEditingItem(null);
+        }}
+        onSave={handleSaveNote}
+      />
 
       {/* Item Detail / Actions Modal */}
-      {selectedItem && (
-        <ItemDetailModal
-          item={selectedItem}
-          currentDateStr={formatDateKey(new Date())}
-          onClose={() => setSelectedItem(null)}
-          onToggleComplete={handleToggleComplete}
-          onEdit={handleEditItem}
-          onDelete={handleDeleteItem}
-        />
-      )}
+      <ItemDetailModal
+        isOpen={Boolean(selectedItem)}
+        item={selectedItem}
+        currentDateStr={formatDateKey(new Date())}
+        onClose={() => setSelectedItem(null)}
+        onToggleComplete={handleToggleComplete}
+        onEdit={handleEditItem}
+        onDelete={handleDeleteItem}
+      />
 
       {/* Toast Notification Banner */}
       {toastMessage && (

@@ -1,4 +1,4 @@
-import { ScheduleEvent, AttackRecord, NoteRecord, AppSettings, DatabaseBackup, Severity } from "./types";
+import { ScheduleEvent, AttackRecord, NoteRecord, AppSettings, DatabaseBackup, Severity, APP_VERSION } from "./types";
 
 const SCHEDULE_KEY = "asthmatick_schedule_events";
 const ATTACKS_KEY = "asthmatick_attacks";
@@ -8,6 +8,7 @@ const SETTINGS_KEY = "asthmatick_settings";
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
   notificationsEnabled: false,
+  notificationSound: "system",
   hasSeenOnboarding: false,
 };
 
@@ -207,7 +208,7 @@ export function getScheduleStatusInfo(
 // Export full backup
 export function createDatabaseBackup(): DatabaseBackup {
   return {
-    version: "1.0.2",
+    version: APP_VERSION,
     exportDate: new Date().toISOString(),
     packageId: "app.asthma.tick",
     scheduleEvents: loadScheduleEvents(),

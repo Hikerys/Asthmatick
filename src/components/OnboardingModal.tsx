@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { LungLogo } from "./Icons";
+import { ModalSheet } from "./ModalSheet";
 
 interface OnboardingModalProps {
+  isOpen?: boolean;
   onComplete: () => void;
 }
 
-export function OnboardingModal({ onComplete }: OnboardingModalProps) {
+export function OnboardingModal({ isOpen = true, onComplete }: OnboardingModalProps) {
   const [step, setStep] = useState(0);
 
   const steps = [
@@ -89,74 +91,74 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   };
 
   return (
-    <div className="ov on">
-      <div className="sheet" style={{ textAlign: "center", paddingBottom: "32px" }}>
-        <div className="grab" />
+    <ModalSheet
+      isOpen={isOpen}
+      onClose={onComplete}
+      sheetStyle={{ textAlign: "center", paddingBottom: "32px" }}
+    >
+      <span
+        style={{
+          display: "inline-block",
+          fontSize: "12px",
+          fontWeight: 700,
+          color: "var(--teal)",
+          background: "var(--tint)",
+          padding: "4px 12px",
+          borderRadius: "20px",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+          marginBottom: "16px",
+        }}
+      >
+        {current.badge}
+      </span>
 
-        <span
-          style={{
-            display: "inline-block",
-            fontSize: "12px",
-            fontWeight: 700,
-            color: "var(--teal)",
-            background: "var(--tint)",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            marginBottom: "16px",
-          }}
-        >
-          {current.badge}
-        </span>
+      {current.icon}
 
-        {current.icon}
+      <h3 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "8px" }}>
+        {current.title}
+      </h3>
+      <p style={{ fontSize: "15px", color: "var(--sub)", lineHeight: 1.5, marginBottom: "24px" }}>
+        {current.description}
+      </p>
 
-        <h3 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "8px" }}>
-          {current.title}
-        </h3>
-        <p style={{ fontSize: "15px", color: "var(--sub)", lineHeight: 1.5, marginBottom: "24px" }}>
-          {current.description}
-        </p>
+      {/* Step dots */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "24px" }}>
+        {steps.map((_, idx) => (
+          <div
+            key={idx}
+            style={{
+              height: "6px",
+              width: idx === step ? "22px" : "6px",
+              borderRadius: "3px",
+              background: idx === step ? "var(--teal)" : "var(--sub)",
+              opacity: idx === step ? 1 : 0.35,
+              transition: "all 0.3s ease",
+            }}
+          />
+        ))}
+      </div>
 
-        {/* Step dots */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "24px" }}>
-          {steps.map((_, idx) => (
-            <div
-              key={idx}
-              style={{
-                height: "6px",
-                width: idx === step ? "22px" : "6px",
-                borderRadius: "3px",
-                background: idx === step ? "var(--teal)" : "var(--sub)",
-                opacity: idx === step ? 1 : 0.35,
-                transition: "all 0.3s ease",
-              }}
-            />
-          ))}
-        </div>
-
-        <div style={{ display: "flex", gap: "8px" }}>
-          {step > 0 && (
-            <button
-              type="button"
-              onClick={() => setStep(step - 1)}
-              className="btn-secondary"
-              style={{ flex: 1 }}
-            >
-              Назад
-            </button>
-          )}
+      <div style={{ display: "flex", gap: "8px" }}>
+        {step > 0 && (
           <button
             type="button"
-            onClick={handleNext}
-            className="btn-primary"
+            onClick={() => setStep(step - 1)}
+            className="btn-secondary"
             style={{ flex: 1 }}
           >
-            {step === steps.length - 1 ? "Начать" : "Далее"}
+            Назад
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          onClick={handleNext}
+          className="btn-primary"
+          style={{ flex: 1 }}
+        >
+          {step === steps.length - 1 ? "Начать" : "Далее"}
+        </button>
       </div>
-    </div>
+    </ModalSheet>
   );
 }

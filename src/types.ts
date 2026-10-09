@@ -1,3 +1,5 @@
+export const APP_VERSION = "1.1.0";
+
 export type Severity = "light" | "medium" | "heavy";
 
 export interface ScheduleEvent {
@@ -32,9 +34,17 @@ export interface NoteRecord {
   createdAt: number;
 }
 
+export type NotificationSound =
+  | "system"
+  | "sound_chime"
+  | "sound_breeze"
+  | "sound_digital"
+  | "sound_marimba";
+
 export interface AppSettings {
   theme: "light" | "dark";
   notificationsEnabled: boolean;
+  notificationSound?: NotificationSound;
   hasSeenOnboarding: boolean;
 }
 

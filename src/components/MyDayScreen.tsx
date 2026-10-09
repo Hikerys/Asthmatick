@@ -72,10 +72,10 @@ export function MyDayScreen({
         title: att.trigger || "Приступ астмы",
         subtitle:
           att.severity === "light"
-            ? "Легкое"
+            ? "Легкое состояние"
             : att.severity === "medium"
-            ? "Среднее"
-            : "Тяжелое",
+            ? "Среднее состояние"
+            : "Тяжелое состояние",
         severity: att.severity,
         completed: att.completed ?? true,
         raw: att,

@@ -773,6 +773,43 @@ nav button.on::after {
   transform: none;
 }
 
+.grab-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 4px 0 16px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.grab-area:active {
+  cursor: grabbing;
+}
+
+.grab-area .grab {
+  width: 46px;
+  height: 5px;
+  border-radius: 5px;
+  background: var(--sub);
+  opacity: .45;
+  transition: opacity .2s, transform .2s, background-color .2s;
+  pointer-events: none;
+  margin: 0;
+}
+
+.grab-area:hover .grab {
+  opacity: .75;
+}
+
+.grab-area:active .grab {
+  opacity: .95;
+  transform: scale(1.12, 1.25);
+  background: var(--teal);
+}
+
 .sheet .grab {
   width: 44px;
   height: 5px;
