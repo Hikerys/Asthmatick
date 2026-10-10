@@ -20,7 +20,7 @@
 ## 📸 Скриншот
 
 <p align="center">
-  <img src="screenshots/Screenshot_20261007-163201_Asthmatick(1).png" width="320" alt="Главный экран «Мой день»" />
+  <img src="screenshots/Asthmatick_Screen.png" width="320" alt="Главный экран «Мой день» (Material Design 3)" />
 </p>
 
 ## 📥 Скачать
