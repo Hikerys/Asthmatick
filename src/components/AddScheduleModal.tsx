@@ -106,17 +106,18 @@ export function AddScheduleModal({ isOpen = true, initial, onClose, onSave }: Ad
             <label className="form-label" style={{ margin: 0 }}>
               Дни недели ({days.length} из 7)
             </label>
-            <div style={{ display: "flex", gap: "8px", fontSize: "13px", fontWeight: 700 }}>
+            <div style={{ display: "flex", gap: "6px" }}>
               <span
                 onClick={selectAllDays}
-                style={{ color: "var(--teal)", cursor: "pointer" }}
+                className="m3-chip tap"
+                style={{ cursor: "pointer", fontSize: "12px", padding: "3px 8px" }}
               >
                 Все
               </span>
-              <span style={{ color: "var(--sub)" }}>|</span>
               <span
                 onClick={selectWeekdays}
-                style={{ color: "var(--teal)", cursor: "pointer" }}
+                className="m3-chip tap"
+                style={{ cursor: "pointer", fontSize: "12px", padding: "3px 8px" }}
               >
                 Будни
               </span>
@@ -135,18 +136,18 @@ export function AddScheduleModal({ isOpen = true, initial, onClose, onSave }: Ad
                   className="tap"
                   style={{
                     aspectRatio: "1",
-                    borderRadius: "50%",
-                    border: "none",
+                    borderRadius: "12px",
+                    border: isSelected ? "1px solid var(--teal)" : "1px solid var(--border)",
                     background: isSelected ? "var(--teal)" : "var(--day)",
                     color: isSelected ? "#fff" : "var(--text)",
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: "14px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: isSelected ? "0 0 0 2px var(--card), 0 0 0 4px var(--teal)" : "none",
+                    boxShadow: isSelected ? "0 2px 4px rgba(26, 155, 140, 0.25)" : "none",
                     cursor: "pointer",
-                    transition: "background .25s, box-shadow .2s",
+                    transition: "all .2s cubic-bezier(0.2, 0, 0, 1)",
                   }}
                 >
                   {wd.label}

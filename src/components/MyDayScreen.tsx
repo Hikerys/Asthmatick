@@ -153,18 +153,26 @@ export function MyDayScreen({
 
               {/* Text */}
               <div className="t">
-                <b>
-                  {item.time}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "2px" }}>
+                  <b>{item.time}</b>
                   {isSchedule && (
-                    <i style={{ color: item.isMissed ? "#f06a68" : undefined }}>
+                    <span
+                      className={`status-chip ${
+                        item.completed
+                          ? "chip-done"
+                          : item.isMissed
+                          ? "chip-missed"
+                          : "chip-planned"
+                      }`}
+                    >
                       {item.completed
-                        ? "(выполнено)"
+                        ? "выполнено"
                         : item.isMissed
-                        ? "(пропущено)"
-                        : "(планируется)"}
-                    </i>
+                        ? "пропущено"
+                        : "планируется"}
+                    </span>
                   )}
-                </b>
+                </div>
                 <div>{item.title}</div>
                 {item.subtitle && (
                   <em

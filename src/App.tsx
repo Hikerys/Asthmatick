@@ -21,6 +21,7 @@ import {
 } from "./storage";
 import { syncScheduleNotifications, clearAllNotifications } from "./notifications";
 import { triggerBack } from "./navigation";
+import { applyDynamicThemeStyles, removeDynamicThemeStyles } from "./dynamicTheme";
 import { Header } from "./components/Header";
 import { BottomNav, NavTab } from "./components/BottomNav";
 import { MyDayScreen } from "./components/MyDayScreen";
@@ -147,15 +148,46 @@ export function App() {
 
   // Sync theme attribute and class to HTML root and body
   useEffect(() => {
+    const applyTheme = (isDark: boolean, themeVal: "light" | "dark" | "system") => {
+      if (isDark) {
+        document.documentElement.dataset.theme = "dark";
+        document.body.dataset.theme = "dark";
+        document.documentElement.classList.add("dark");
+        document.body.classList.add("dark");
+        document.documentElement.classList.remove("light");
+        document.body.classList.remove("light");
+      } else {
+        delete document.documentElement.dataset.theme;
+        delete document.body.dataset.theme;
+        document.documentElement.classList.add("light");
+        document.body.classList.add("light");
+        document.documentElement.classList.remove("dark");
+        document.body.classList.remove("dark");
+      }
+      document.documentElement.dataset.appTheme = themeVal;
+    };
+
     if (settings.theme === "dark") {
-      document.documentElement.dataset.theme = "dark";
-      document.body.dataset.theme = "dark";
+      removeDynamicThemeStyles();
+      applyTheme(true, "dark");
+    } else if (settings.theme === "light") {
+      removeDynamicThemeStyles();
+      applyTheme(false, "light");
     } else {
-      delete document.documentElement.dataset.theme;
-      delete document.body.dataset.theme;
+      // "system" - sync with device / Android Material You mode and wallpaper Monet colors
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      applyTheme(mq.matches, "system");
+      applyDynamicThemeStyles(mq.matches);
+
+      const handleThemeChange = (e: MediaQueryListEvent) => {
+        applyTheme(e.matches, "system");
+        applyDynamicThemeStyles(e.matches);
+      };
+      mq.addEventListener("change", handleThemeChange);
+      return () => {
+        mq.removeEventListener("change", handleThemeChange);
+      };
     }
-    document.documentElement.className = settings.theme;
-    document.body.className = settings.theme;
   }, [settings.theme]);
 
   // Global ripple effect handler matching AsthmatickDesign.html

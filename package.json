@@ -1,14 +1,14 @@
 {
   "name": "asthmatick",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "cap:add": "cap add android",
     "cap:sync": "cap sync android",
-    "build:apk": "npm run build && cap sync android && cd android && ./gradlew assembleRelease && mkdir -p ../releases && cp -f app/build/outputs/apk/release/app-release.apk ../releases/Asthmatick.apk && cp -f app/build/outputs/apk/release/app-release.apk ../Asthmatick.apk"
+    "build:apk": "npm run build && cap sync android && export JAVA_HOME=${JAVA_HOME:-/home/kano/Documents/Smotri/.tools/jdk} && export PATH=$JAVA_HOME/bin:$PATH && cd android && ./gradlew assembleRelease && mkdir -p ../releases && cp -f app/build/outputs/apk/release/app-release.apk ../releases/Asthmatick.apk && cp -f app/build/outputs/apk/release/app-release.apk ../Asthmatick.apk"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

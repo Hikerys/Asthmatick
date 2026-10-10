@@ -160,11 +160,11 @@ export function SettingsScreen({
     }
   };
 
-  const handleSetTheme = (theme: "light" | "dark") => {
+  const handleSetTheme = (theme: "light" | "dark" | "system") => {
     const updated: AppSettings = { ...settings, theme };
     saveSettings(updated);
     onUpdateSettings(updated);
-    setTimeout(() => setActiveModal("none"), 300);
+    setTimeout(() => setActiveModal("none"), 250);
   };
 
   const handleSetSound = (sound: NotificationSound) => {
@@ -184,125 +184,149 @@ export function SettingsScreen({
         className="hidden"
       />
 
-      {/* 1. Уведомления */}
-      <div
-        className="card tap"
-        onClick={() => setActiveModal("notifications")}
-      >
-        <div className="ic b">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#2f7be0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 21c1.5-1.5 2-3 2-6v-3a6 6 0 0112 0v3c0 3 .5 4.5 2 6zM11.5 24a2.5 2.5 0 005 0" />
-            <path d="M14 4v2" />
-          </svg>
-        </div>
-        <div className="t">
-          <b>Уведомления</b>
-          <div>{settings.notificationsEnabled ? "Включены (напоминания активны)" : "Напоминания и оповещения"}</div>
-        </div>
-        <ChevronRightIcon />
-      </div>
+      {/* Group 1: Предпочтения */}
+      <div className="m3-settings-group">
+        <div className="m3-settings-group-title">Предпочтения</div>
+        <div className="m3-settings-group-card">
+          {/* 1. Уведомления */}
+          <div
+            className="card tap"
+            onClick={() => setActiveModal("notifications")}
+          >
+            <div className="ic b">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#2f7be0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 21c1.5-1.5 2-3 2-6v-3a6 6 0 0112 0v3c0 3 .5 4.5 2 6zM11.5 24a2.5 2.5 0 005 0" />
+                <path d="M14 4v2" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Уведомления</b>
+              <div>{settings.notificationsEnabled ? "Включены (напоминания активны)" : "Напоминания и оповещения"}</div>
+            </div>
+            <ChevronRightIcon />
+          </div>
 
-      {/* 2. Звук уведомления */}
-      <div
-        className="card tap"
-        onClick={() => setActiveModal("sound")}
-      >
-        <div className="ic g">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#1a9b8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 6 7 10 3 10 3 18 7 18 12 22 12 6" />
-            <path d="M16.5 9.5a5 5 0 010 9" />
-            <path d="M19.8 6.2a9.5 9.5 0 010 15.6" />
-          </svg>
-        </div>
-        <div className="t">
-          <b>Звук уведомления</b>
-          <div>
-            {SOUND_OPTIONS.find((s) => s.id === (settings.notificationSound || "system"))?.title || "Системный"}
+          {/* 2. Звук уведомления */}
+          <div
+            className="card tap"
+            onClick={() => setActiveModal("sound")}
+          >
+            <div className="ic g">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#1a9b8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 6 7 10 3 10 3 18 7 18 12 22 12 6" />
+                <path d="M16.5 9.5a5 5 0 010 9" />
+                <path d="M19.8 6.2a9.5 9.5 0 010 15.6" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Звук уведомления</b>
+              <div>
+                {SOUND_OPTIONS.find((s) => s.id === (settings.notificationSound || "system"))?.title || "Системный"}
+              </div>
+            </div>
+            <ChevronRightIcon />
+          </div>
+
+          {/* 3. Тема приложения */}
+          <div
+            className="card tap"
+            id="themeRow"
+            onClick={() => setActiveModal("theme")}
+          >
+            <div className="ic p">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#7b4bc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 3h10l5 5v15a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                <path d="M17 3v5h5M9 13h8M9 17h8M9 21h5" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Тема приложения</b>
+              <div>
+                {settings.theme === "dark"
+                  ? "Тёмная"
+                  : settings.theme === "system"
+                  ? "Как в системе (MD3)"
+                  : "Светлая"}
+              </div>
+            </div>
+            <ChevronRightIcon />
           </div>
         </div>
-        <ChevronRightIcon />
       </div>
 
-      {/* 3. Тема приложения */}
-      <div
-        className="card tap"
-        id="themeRow"
-        onClick={() => setActiveModal("theme")}
-      >
-        <div className="ic p">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#7b4bc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 3h10l5 5v15a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
-            <path d="M17 3v5h5M9 13h8M9 17h8M9 21h5" />
-          </svg>
+      {/* Group 2: Резервное копирование */}
+      <div className="m3-settings-group">
+        <div className="m3-settings-group-title">Резервное копирование</div>
+        <div className="m3-settings-group-card">
+          {/* Импортировать данные */}
+          <div
+            className="card tap"
+            onClick={() => {
+              setImportStatus(null);
+              setActiveModal("import");
+            }}
+          >
+            <div className="ic g">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#1a9b8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 20a6 6 0 01-.5-12 8 8 0 0115 1.5A5 5 0 0121 20" />
+                <path d="M14 25v-9M10.5 19.5L14 16l3.5 3.5" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Импортировать данные</b>
+              <div>Загрузить из резервной копии</div>
+            </div>
+            <ChevronRightIcon />
+          </div>
+
+          {/* Экспортировать данные */}
+          <div
+            className="card tap"
+            onClick={() => {
+              setExportNotice(null);
+              setActiveModal("export");
+            }}
+          >
+            <div className="ic b">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#2f7be0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 20a6 6 0 01-.5-12 8 8 0 0115 1.5A5 5 0 0121 20" />
+                <path d="M14 15v9M10.5 20.5L14 24l3.5-3.5" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Экспортировать данные</b>
+              <div>Сохранить на устройство ({totalCount} записей)</div>
+            </div>
+            <ChevronRightIcon />
+          </div>
         </div>
-        <div className="t">
-          <b>Тема приложения</b>
-          <div>{settings.theme === "dark" ? "Тёмная" : "Светлая"}</div>
-        </div>
-        <ChevronRightIcon />
       </div>
 
-      {/* 3. Импортировать данные */}
-      <div
-        className="card tap"
-        onClick={() => {
-          setImportStatus(null);
-          setActiveModal("import");
-        }}
-      >
-        <div className="ic g">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#1a9b8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 20a6 6 0 01-.5-12 8 8 0 0115 1.5A5 5 0 0121 20" />
-            <path d="M14 25v-9M10.5 19.5L14 16l3.5 3.5" />
-          </svg>
+      {/* Group 3: О приложении */}
+      <div className="m3-settings-group">
+        <div className="m3-settings-group-title">О приложении</div>
+        <div className="m3-settings-group-card">
+          {/* Справочная информация */}
+          <div
+            className="card tap"
+            onClick={() => setActiveModal("info")}
+          >
+            <div className="ic p">
+              <svg viewBox="0 0 28 28" fill="none" stroke="#7b4bc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="14" cy="14" r="11" />
+                <path d="M14 12.5V20M14 8.5v.5" />
+              </svg>
+            </div>
+            <div className="t">
+              <b>Справочная информация</b>
+              <div>О приложении и версия</div>
+            </div>
+            <ChevronRightIcon />
+          </div>
         </div>
-        <div className="t">
-          <b>Импортировать данные</b>
-          <div>Загрузить из резервной копии</div>
-        </div>
-        <ChevronRightIcon />
       </div>
 
-      {/* 4. Экспортировать данные */}
-      <div
-        className="card tap"
-        onClick={() => {
-          setExportNotice(null);
-          setActiveModal("export");
-        }}
-      >
-        <div className="ic b">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#2f7be0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 20a6 6 0 01-.5-12 8 8 0 0115 1.5A5 5 0 0121 20" />
-            <path d="M14 15v9M10.5 20.5L14 24l3.5-3.5" />
-          </svg>
-        </div>
-        <div className="t">
-          <b>Экспортировать данные</b>
-          <div>Сохранить на устройство ({totalCount} записей)</div>
-        </div>
-        <ChevronRightIcon />
-      </div>
-
-      {/* 5. Справочная информация */}
-      <div
-        className="card tap"
-        onClick={() => setActiveModal("info")}
-      >
-        <div className="ic p">
-          <svg viewBox="0 0 28 28" fill="none" stroke="#7b4bc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="14" cy="14" r="11" />
-            <path d="M14 12.5V20M14 8.5v.5" />
-          </svg>
-        </div>
-        <div className="t">
-          <b>Справочная информация</b>
-          <div>О приложении</div>
-        </div>
-        <ChevronRightIcon />
-      </div>
-
-      {/* MODAL: Theme Sheet (Matching AsthmatickDesign.html) */}
+      {/* MODAL: Theme Sheet */}
       <ModalSheet
         isOpen={activeModal === "theme"}
         onClose={() => setActiveModal("none")}
@@ -319,7 +343,12 @@ export function SettingsScreen({
               <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5" />
             </svg>
           </div>
-          <span>Светлая</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div>Светлая</div>
+            <div style={{ fontSize: "12px", color: "var(--sub)", marginTop: "2px" }}>
+              Классическая бирюзовая палитра
+            </div>
+          </div>
           <span className="r" />
         </button>
         <button
@@ -332,7 +361,31 @@ export function SettingsScreen({
               <path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z" />
             </svg>
           </div>
-          <span>Тёмная</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div>Тёмная</div>
+            <div style={{ fontSize: "12px", color: "var(--sub)", marginTop: "2px" }}>
+              Глубокая тёмная палитра
+            </div>
+          </div>
+          <span className="r" />
+        </button>
+        <button
+          type="button"
+          className={`opt tap ${settings.theme === "system" ? "on" : ""}`}
+          onClick={() => handleSetTheme("system")}
+        >
+          <div className="ic b">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="3" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div>Как в системе (MD3)</div>
+            <div style={{ fontSize: "12px", color: "var(--sub)", marginTop: "2px" }}>
+              По обоям телефона (Material You)
+            </div>
+          </div>
           <span className="r" />
         </button>
       </ModalSheet>
@@ -345,14 +398,20 @@ export function SettingsScreen({
         <h3>Уведомления</h3>
         <div className="opt tap" onClick={handleToggleNotifications} style={{ justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "16px" }}>Включить напоминания</div>
+            <div style={{ fontWeight: 600, fontSize: "16px" }}>Включить напоминания</div>
             <div style={{ fontSize: "13px", color: "var(--sub)", marginTop: "2px" }}>
               Оповещения о приёме лекарств по плану
             </div>
           </div>
-          <span className={`r ${notificationGranted ? "on" : ""}`} style={{ background: notificationGranted ? "var(--teal)" : "transparent", borderColor: notificationGranted ? "var(--teal)" : "var(--sub)" }}>
-            {notificationGranted && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff", display: "block" }} />}
-          </span>
+          <div className={`m3-switch ${notificationGranted ? "on" : ""}`}>
+            <div className="m3-switch-thumb">
+              {notificationGranted && (
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Exact Alarm status & guidance on Android */}

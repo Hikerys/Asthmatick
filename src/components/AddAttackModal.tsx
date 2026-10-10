@@ -87,9 +87,9 @@ export function AddAttackModal({
               onClick={() => setSeverity("light")}
               className="tap"
               style={{
-                padding: "10px 4px",
-                borderRadius: "14px",
-                border: "none",
+                padding: "12px 6px",
+                borderRadius: "12px",
+                border: severity === "light" ? "2px solid #b45309" : "1px solid var(--border)",
                 backgroundColor: "#f9e46b",
                 color: "#0f2b46",
                 cursor: "pointer",
@@ -99,13 +99,13 @@ export function AddAttackModal({
                 justifyContent: "center",
                 textAlign: "center",
                 minHeight: "64px",
-                boxShadow: severity === "light" ? "0 0 0 2px var(--card), 0 0 0 4px #eab308" : "none",
-                opacity: severity === "light" ? 1 : 0.65,
-                transition: "opacity .2s, box-shadow .2s",
+                boxShadow: severity === "light" ? "0 2px 6px rgba(180, 83, 9, 0.35)" : "none",
+                opacity: severity === "light" ? 1 : 0.6,
+                transition: "all .2s cubic-bezier(0.2, 0, 0, 1)",
               }}
             >
-              <span style={{ fontSize: "14px", fontWeight: 800, lineHeight: 1.2 }}>Легкое</span>
-              <span style={{ fontSize: "11px", fontWeight: 600, opacity: 0.85, marginTop: "3px", lineHeight: 1.2 }}>
+              <span style={{ fontSize: "14px", fontWeight: 700, lineHeight: 1.2 }}>Легкое</span>
+              <span style={{ fontSize: "11px", fontWeight: 500, opacity: 0.85, marginTop: "4px", lineHeight: 1.2 }}>
                 Легкая одышка
               </span>
             </button>
@@ -116,9 +116,9 @@ export function AddAttackModal({
               onClick={() => setSeverity("medium")}
               className="tap"
               style={{
-                padding: "10px 4px",
-                borderRadius: "14px",
-                border: "none",
+                padding: "12px 6px",
+                borderRadius: "12px",
+                border: severity === "medium" ? "2px solid #c2410c" : "1px solid var(--border)",
                 backgroundColor: "#f8b04b",
                 color: "#0f2b46",
                 cursor: "pointer",
@@ -128,13 +128,13 @@ export function AddAttackModal({
                 justifyContent: "center",
                 textAlign: "center",
                 minHeight: "64px",
-                boxShadow: severity === "medium" ? "0 0 0 2px var(--card), 0 0 0 4px #f97316" : "none",
-                opacity: severity === "medium" ? 1 : 0.65,
-                transition: "opacity .2s, box-shadow .2s",
+                boxShadow: severity === "medium" ? "0 2px 6px rgba(194, 65, 12, 0.35)" : "none",
+                opacity: severity === "medium" ? 1 : 0.6,
+                transition: "all .2s cubic-bezier(0.2, 0, 0, 1)",
               }}
             >
-              <span style={{ fontSize: "14px", fontWeight: 800, lineHeight: 1.2 }}>Среднее</span>
-              <span style={{ fontSize: "11px", fontWeight: 600, opacity: 0.85, marginTop: "3px", lineHeight: 1.2 }}>
+              <span style={{ fontSize: "14px", fontWeight: 700, lineHeight: 1.2 }}>Среднее</span>
+              <span style={{ fontSize: "11px", fontWeight: 500, opacity: 0.85, marginTop: "4px", lineHeight: 1.2 }}>
                 Выраженная одышка
               </span>
             </button>
@@ -145,9 +145,9 @@ export function AddAttackModal({
               onClick={() => setSeverity("heavy")}
               className="tap"
               style={{
-                padding: "10px 4px",
-                borderRadius: "14px",
-                border: "none",
+                padding: "12px 6px",
+                borderRadius: "12px",
+                border: severity === "heavy" ? "2px solid #b91c1c" : "1px solid var(--border)",
                 backgroundColor: "#f06a68",
                 color: "#0f2b46",
                 cursor: "pointer",
@@ -157,13 +157,13 @@ export function AddAttackModal({
                 justifyContent: "center",
                 textAlign: "center",
                 minHeight: "64px",
-                boxShadow: severity === "heavy" ? "0 0 0 2px var(--card), 0 0 0 4px #ef4444" : "none",
-                opacity: severity === "heavy" ? 1 : 0.65,
-                transition: "opacity .2s, box-shadow .2s",
+                boxShadow: severity === "heavy" ? "0 2px 6px rgba(185, 28, 28, 0.35)" : "none",
+                opacity: severity === "heavy" ? 1 : 0.6,
+                transition: "all .2s cubic-bezier(0.2, 0, 0, 1)",
               }}
             >
-              <span style={{ fontSize: "14px", fontWeight: 800, lineHeight: 1.2 }}>Тяжелое</span>
-              <span style={{ fontSize: "11px", fontWeight: 600, opacity: 0.85, marginTop: "3px", lineHeight: 1.2 }}>
+              <span style={{ fontSize: "14px", fontWeight: 700, lineHeight: 1.2 }}>Тяжелое</span>
+              <span style={{ fontSize: "11px", fontWeight: 500, opacity: 0.85, marginTop: "4px", lineHeight: 1.2 }}>
                 Удушье
               </span>
             </button>

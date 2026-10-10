@@ -97,17 +97,11 @@ export function OnboardingModal({ isOpen = true, onComplete }: OnboardingModalPr
       sheetStyle={{ textAlign: "center", paddingBottom: "32px" }}
     >
       <span
+        className="m3-chip m3-chip-tonal"
         style={{
-          display: "inline-block",
-          fontSize: "12px",
-          fontWeight: 700,
-          color: "var(--teal)",
-          background: "var(--tint)",
-          padding: "4px 12px",
-          borderRadius: "20px",
+          marginBottom: "16px",
           textTransform: "uppercase",
           letterSpacing: "0.5px",
-          marginBottom: "16px",
         }}
       >
         {current.badge}

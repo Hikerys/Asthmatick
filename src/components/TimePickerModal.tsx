@@ -234,12 +234,12 @@ export function TimePickerModal({
             flex: 1,
             padding: "8px 4px",
             borderRadius: "10px",
-            border: "none",
+            border: "1px solid var(--border)",
             background: "var(--card)",
             color: "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
-            boxShadow: "var(--shadow)",
+            fontWeight: 600,
+            boxShadow: "var(--md-elevation-1)",
             cursor: "pointer",
           }}
         >
@@ -253,12 +253,12 @@ export function TimePickerModal({
             flex: 1,
             padding: "8px 4px",
             borderRadius: "10px",
-            border: "none",
+            border: "1px solid var(--border)",
             background: "var(--card)",
             color: "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
-            boxShadow: "var(--shadow)",
+            fontWeight: 600,
+            boxShadow: "var(--md-elevation-1)",
             cursor: "pointer",
           }}
         >
@@ -272,12 +272,12 @@ export function TimePickerModal({
             flex: 1,
             padding: "8px 4px",
             borderRadius: "10px",
-            border: "none",
+            border: "1px solid var(--border)",
             background: "var(--card)",
             color: "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
-            boxShadow: "var(--shadow)",
+            fontWeight: 600,
+            boxShadow: "var(--md-elevation-1)",
             cursor: "pointer",
           }}
         >
@@ -291,12 +291,12 @@ export function TimePickerModal({
             flex: 1,
             padding: "8px 4px",
             borderRadius: "10px",
-            border: "none",
+            border: "1px solid var(--border)",
             background: "var(--card)",
             color: "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
-            boxShadow: "var(--shadow)",
+            fontWeight: 600,
+            boxShadow: "var(--md-elevation-1)",
             cursor: "pointer",
           }}
         >
@@ -315,13 +315,13 @@ export function TimePickerModal({
             className="tap"
             onClick={setNow}
             style={{
-              padding: "8px 12px",
-              borderRadius: "12px",
-              border: "none",
-              background: "rgba(26, 155, 140, 0.15)",
+              padding: "7px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--teal)",
+              background: "rgba(26, 155, 140, 0.12)",
               color: "var(--teal)",
               fontSize: "13px",
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: "pointer",
             }}
           >
@@ -332,14 +332,14 @@ export function TimePickerModal({
             className="tap"
             onClick={() => setPreset(8, 0)}
             style={{
-              padding: "8px 12px",
-              borderRadius: "12px",
-              border: "none",
+              padding: "7px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--border)",
               background: "var(--card)",
               color: "var(--text)",
               fontSize: "13px",
-              fontWeight: 600,
-              boxShadow: "var(--shadow)",
+              fontWeight: 500,
+              boxShadow: "var(--md-elevation-1)",
               cursor: "pointer",
             }}
           >
@@ -350,14 +350,14 @@ export function TimePickerModal({
             className="tap"
             onClick={() => setPreset(13, 0)}
             style={{
-              padding: "8px 12px",
-              borderRadius: "12px",
-              border: "none",
+              padding: "7px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--border)",
               background: "var(--card)",
               color: "var(--text)",
               fontSize: "13px",
-              fontWeight: 600,
-              boxShadow: "var(--shadow)",
+              fontWeight: 500,
+              boxShadow: "var(--md-elevation-1)",
               cursor: "pointer",
             }}
           >
@@ -368,14 +368,14 @@ export function TimePickerModal({
             className="tap"
             onClick={() => setPreset(19, 0)}
             style={{
-              padding: "8px 12px",
-              borderRadius: "12px",
-              border: "none",
+              padding: "7px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--border)",
               background: "var(--card)",
               color: "var(--text)",
               fontSize: "13px",
-              fontWeight: 600,
-              boxShadow: "var(--shadow)",
+              fontWeight: 500,
+              boxShadow: "var(--md-elevation-1)",
               cursor: "pointer",
             }}
           >
@@ -386,14 +386,14 @@ export function TimePickerModal({
             className="tap"
             onClick={() => setPreset(22, 0)}
             style={{
-              padding: "8px 12px",
-              borderRadius: "12px",
-              border: "none",
+              padding: "7px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--border)",
               background: "var(--card)",
               color: "var(--text)",
               fontSize: "13px",
-              fontWeight: 600,
-              boxShadow: "var(--shadow)",
+              fontWeight: 500,
+              boxShadow: "var(--md-elevation-1)",
               cursor: "pointer",
             }}
           >

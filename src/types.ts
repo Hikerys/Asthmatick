@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.2.0";
 
 export type Severity = "light" | "medium" | "heavy";
 
@@ -42,7 +42,7 @@ export type NotificationSound =
   | "sound_marimba";
 
 export interface AppSettings {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   notificationsEnabled: boolean;
   notificationSound?: NotificationSound;
   hasSeenOnboarding: boolean;

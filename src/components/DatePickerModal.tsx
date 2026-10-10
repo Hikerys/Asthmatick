@@ -117,15 +117,15 @@ export function DatePickerModal({
           className={`tap ${selectedDateStr === yesterdayStr ? "on" : ""}`}
           style={{
             flex: 1,
-            padding: "9px 6px",
-            borderRadius: "12px",
-            border: "none",
+            padding: "8px 6px",
+            borderRadius: "8px",
+            border: selectedDateStr === yesterdayStr ? "1px solid var(--teal)" : "1px solid var(--border)",
             background: selectedDateStr === yesterdayStr ? "var(--teal)" : "var(--tint)",
             color: selectedDateStr === yesterdayStr ? "#fff" : "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
+            fontWeight: 600,
             cursor: "pointer",
-            boxShadow: selectedDateStr === yesterdayStr ? "0 2px 8px rgba(22, 140, 126, .35)" : "none",
+            boxShadow: selectedDateStr === yesterdayStr ? "var(--md-elevation-1)" : "none",
             transition: "all .2s ease",
           }}
         >
@@ -137,15 +137,15 @@ export function DatePickerModal({
           className={`tap ${selectedDateStr === todayStr ? "on" : ""}`}
           style={{
             flex: 1,
-            padding: "9px 6px",
-            borderRadius: "12px",
-            border: "none",
+            padding: "8px 6px",
+            borderRadius: "8px",
+            border: selectedDateStr === todayStr ? "1px solid var(--teal)" : "1px solid var(--border)",
             background: selectedDateStr === todayStr ? "var(--teal)" : "var(--tint)",
             color: selectedDateStr === todayStr ? "#fff" : "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
+            fontWeight: 600,
             cursor: "pointer",
-            boxShadow: selectedDateStr === todayStr ? "0 2px 8px rgba(22, 140, 126, .35)" : "none",
+            boxShadow: selectedDateStr === todayStr ? "var(--md-elevation-1)" : "none",
             transition: "all .2s ease",
           }}
         >
@@ -157,15 +157,15 @@ export function DatePickerModal({
           className={`tap ${selectedDateStr === tomorrowStr ? "on" : ""}`}
           style={{
             flex: 1,
-            padding: "9px 6px",
-            borderRadius: "12px",
-            border: "none",
+            padding: "8px 6px",
+            borderRadius: "8px",
+            border: selectedDateStr === tomorrowStr ? "1px solid var(--teal)" : "1px solid var(--border)",
             background: selectedDateStr === tomorrowStr ? "var(--teal)" : "var(--tint)",
             color: selectedDateStr === tomorrowStr ? "#fff" : "var(--text)",
             fontSize: "13px",
-            fontWeight: 700,
+            fontWeight: 600,
             cursor: "pointer",
-            boxShadow: selectedDateStr === tomorrowStr ? "0 2px 8px rgba(22, 140, 126, .35)" : "none",
+            boxShadow: selectedDateStr === tomorrowStr ? "var(--md-elevation-1)" : "none",
             transition: "all .2s ease",
           }}
         >

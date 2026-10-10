@@ -59,12 +59,11 @@ export function ItemDetailModal({
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <span
+            className="m3-chip m3-chip-tonal"
             style={{
-              fontSize: "12px",
-              fontWeight: 700,
-              color: "var(--teal)",
               textTransform: "uppercase",
               letterSpacing: "0.5px",
+              marginBottom: "4px",
             }}
           >
             {typeBadge}
@@ -126,30 +125,32 @@ export function ItemDetailModal({
           </div>
         )}
 
-        <div>
-          <div className="form-label">Статус</div>
-          <div
-            style={{
-              fontSize: "15px",
-              fontWeight: 700,
-              color: currentItem.completed
-                ? "var(--teal)"
-                : isSchedule && currentItem.isMissed
-                ? "#f06a68"
-                : "var(--sub)",
-            }}
-          >
-            {currentItem.completed
-              ? isSchedule && currentItem.originalTime && currentItem.originalTime !== currentItem.time
-                ? `✓ Выполнено в ${currentItem.time} (по плану: ${currentItem.originalTime})`
-                : "✓ Выполнено"
-              : isSchedule && currentItem.isMissed
-              ? `❌ Пропущено (доступно было до ${currentItem.windowEndTime})`
-              : isSchedule && currentItem.isTooEarly
-              ? `⏳ Запланировано (доступно с ${currentItem.windowStartTime} до ${currentItem.windowEndTime})`
-              : "⏳ Запланировано"}
+        {isSchedule && (
+          <div>
+            <div className="form-label">Статус</div>
+            <div
+              style={{
+                fontSize: "15px",
+                fontWeight: 700,
+                color: currentItem.completed
+                  ? "var(--teal)"
+                  : currentItem.isMissed
+                  ? "#f06a68"
+                  : "var(--sub)",
+              }}
+            >
+              {currentItem.completed
+                ? currentItem.originalTime && currentItem.originalTime !== currentItem.time
+                  ? `✓ Выполнено в ${currentItem.time} (по плану: ${currentItem.originalTime})`
+                  : "✓ Выполнено"
+                : currentItem.isMissed
+                ? `❌ Пропущено (доступно было до ${currentItem.windowEndTime})`
+                : currentItem.isTooEarly
+                ? `⏳ Запланировано (доступно с ${currentItem.windowStartTime} до ${currentItem.windowEndTime})`
+                : "⏳ Запланировано"}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Action Buttons */}

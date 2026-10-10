@@ -7,6 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(FilePickerExportPlugin.class);
+        registerPlugin(DynamicThemePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

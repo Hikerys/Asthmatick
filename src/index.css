@@ -1,16 +1,17 @@
 :root {
+  /* Exact original light color palette preserved */
   --bg1: #e9f6f6;
   --bg2: #f4f9fb;
   --head: #cfe8e2;
   --head2: #d9f0ef;
   --card: #ffffff;
-  --card2: rgba(255, 255, 255, 0.78);
+  --card2: rgba(255, 255, 255, 0.88);
   --text: #0f2b46;
   --sub: #6b7f94;
   --teal: #1a9b8c;
   --teal2: #16a394;
   --tint: #e4f4f0;
-  --shadow: 0 2px 10px rgba(30, 90, 110, 0.07);
+  --shadow: 0 1px 3px rgba(30, 90, 110, 0.08), 0 1px 2px rgba(30, 90, 110, 0.06);
   --nav: #f6fafb;
   --navi: #5f7a96;
   --day: #dff1f2;
@@ -21,7 +22,32 @@
   --green: #dff2ec;
   --lf: #f48a8f;
   --ls: #e0636c;
-  --border: rgba(30, 90, 110, 0.1);
+  --border: rgba(30, 90, 110, 0.12);
+
+  /* Material Design 3 Design Tokens */
+  --md-sys-color-primary: var(--teal);
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: var(--tint);
+  --md-sys-color-on-primary-container: #0f2b46;
+  --md-sys-color-surface: var(--card);
+  --md-sys-color-surface-container: var(--tint);
+  --md-sys-color-on-surface: var(--text);
+  --md-sys-color-on-surface-variant: var(--sub);
+  --md-sys-color-outline: var(--border);
+
+  /* Material 3 Elevations */
+  --md-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --md-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --md-elevation-3: 0 6px 12px rgba(0, 0, 0, 0.14), 0 3px 6px rgba(0, 0, 0, 0.10);
+  --md-elevation-4: 0 8px 16px rgba(0, 0, 0, 0.16), 0 4px 8px rgba(0, 0, 0, 0.12);
+
+  /* Material 3 Corner Shapes */
+  --md-shape-xs: 4px;
+  --md-shape-s: 8px;
+  --md-shape-m: 12px;
+  --md-shape-l: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 9999px;
 
   /* Compatibility bindings */
   --bg-main: #f0f6f5;
@@ -46,7 +72,8 @@
   --severity-heavy-text: #0f2b46;
 }
 
-[data-theme="dark"], html.dark, body.dark {
+[data-theme="dark"]:not([data-md3-dynamic="true"]), html.dark:not([data-md3-dynamic="true"]), body.dark:not([data-md3-dynamic="true"]) {
+  /* Exact original dark color palette preserved */
   --bg1: #0e1a22;
   --bg2: #101d27;
   --head: #143339;
@@ -58,7 +85,7 @@
   --teal: #33c2b0;
   --teal2: #2bb3a2;
   --tint: #1b3a3d;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   --nav: #13232d;
   --navi: #8ea6b4;
   --day: #1c3540;
@@ -69,7 +96,13 @@
   --green: #17372f;
   --lf: #e8797f;
   --ls: #c85a63;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.10);
+
+  /* Material 3 Elevations (Dark) */
+  --md-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.28);
+  --md-elevation-2: 0 3px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.35);
+  --md-elevation-3: 0 6px 14px rgba(0, 0, 0, 0.6), 0 3px 6px rgba(0, 0, 0, 0.4);
+  --md-elevation-4: 0 8px 18px rgba(0, 0, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5);
 
   /* Compatibility bindings */
   --bg-main: #0b1317;
@@ -106,20 +139,29 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background: var(--bg1);
 }
 
 body {
-  font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: #cfdfe3;
+  font-family: 'Roboto', 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg1);
   color: var(--text);
   display: flex;
   justify-content: center;
   transition: background .4s, color .3s;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 [data-theme="dark"] body {
-  background: #060d12;
+  background: var(--bg1);
+}
+
+[data-md3-dynamic="true"],
+[data-md3-dynamic="true"] body,
+[data-md3-dynamic="true"] #root {
+  background: var(--bg1) !important;
 }
 
 #root {
@@ -127,55 +169,91 @@ body {
   height: 100%;
   display: flex;
   justify-content: center;
+  background: var(--bg1);
 }
 
 .app {
   position: relative;
   width: 100%;
-  max-width: 430px;
+  max-width: 100%;
   height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, var(--bg1), var(--bg2));
   transition: background .4s;
-  box-shadow: 0 0 35px rgba(0, 0, 0, 0.12);
 }
 
-/* Header */
-header {
+@media (min-width: 600px) {
+  .app {
+    max-width: 430px;
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* ========================================================
+   Material Design 3: Top App Bar
+   ======================================================== */
+header, .m3-top-app-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 14px;
+  gap: 12px;
+  min-height: 64px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
   background: linear-gradient(180deg, var(--head), var(--head2));
   transition: background .4s;
   flex-shrink: 0;
   z-index: 10;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(30, 90, 110, 0.05);
 }
 
-header svg {
-  width: 40px;
-  height: 40px;
+.m3-top-app-bar-lead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header svg, .m3-top-app-bar-lead svg {
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
 }
 
-header h1 {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.2px;
+header h1, .m3-top-app-bar-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.15px;
   flex: 1;
   color: var(--text);
   margin: 0;
+  line-height: 1.25;
 }
 
-header span {
-  font-size: 15px;
-  color: var(--sub);
-  font-weight: 500;
+/* Material 3 Assist Chip for Version */
+.m3-chip, header span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  padding: 4px 10px;
+  border-radius: var(--md-shape-s);
+  background: var(--tint);
+  color: var(--teal);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
 }
 
-/* Main & Screens */
+.m3-chip-tonal {
+  background: var(--tint);
+  color: var(--teal);
+}
+
+/* ========================================================
+   Screens & Layout
+   ======================================================== */
 main {
   flex: 1;
   position: relative;
@@ -194,7 +272,7 @@ main {
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
+  transition: opacity .25s cubic-bezier(0.2, 0, 0, 1), transform .25s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .screen.on {
@@ -203,25 +281,25 @@ main {
   pointer-events: auto;
 }
 
-/* Ripple effect & tap state */
+/* Interactive Ripple & Tap State */
 .tap {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: transform .15s, box-shadow .2s;
+  transition: transform .15s cubic-bezier(0.2, 0, 0, 1), box-shadow .2s ease, background-color .15s ease;
 }
 
 .tap:active {
-  transform: scale(.975);
+  transform: scale(0.985);
 }
 
 .rip {
   position: absolute;
   border-radius: 50%;
   background: currentColor;
-  opacity: .18;
+  opacity: .14;
   transform: scale(0);
-  animation: rip .6s ease-out forwards;
+  animation: rip .55s ease-out forwards;
   pointer-events: none;
 }
 
@@ -232,19 +310,22 @@ main {
   }
 }
 
-/* Greeting card */
+/* ========================================================
+   Material Design 3: Greeting Hero Card
+   ======================================================== */
 .greet {
   display: flex;
   align-items: center;
   gap: 16px;
   background: var(--greet);
-  border-radius: 16px;
+  border-radius: var(--md-shape-l);
   padding: 16px 18px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  box-shadow: var(--md-elevation-1);
   margin-bottom: 16px;
   position: relative;
   z-index: 2;
-  transition: background .4s;
+  transition: background .4s, box-shadow .2s;
 }
 
 .greet svg {
@@ -257,45 +338,60 @@ main {
 
 .greet b {
   display: block;
-  font-size: 20px;
+  font-size: 19px;
   color: var(--teal);
   font-weight: 700;
+  letter-spacing: -0.1px;
 }
 
 .greet small {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--sub);
   font-weight: 500;
   display: block;
+  margin-top: 2px;
+  letter-spacing: 0.1px;
 }
 
-/* Cards */
+/* ========================================================
+   Material Design 3: Cards & List Items
+   ======================================================== */
 .card {
   display: flex;
   align-items: center;
   gap: 14px;
   background: var(--card);
-  border-radius: 16px;
-  padding: 12px 14px 12px 12px;
+  border-radius: var(--md-shape-l);
+  padding: 14px 16px;
   margin-bottom: 10px;
-  box-shadow: var(--shadow);
-  transition: background .4s, transform .15s;
+  border: 1px solid var(--border);
+  box-shadow: var(--md-elevation-1);
+  transition: background .3s, transform .15s, box-shadow .2s, border-color .2s;
   position: relative;
   z-index: 2;
 }
 
+.card:hover {
+  box-shadow: var(--md-elevation-2);
+}
+
+.card:active {
+  transform: scale(0.985);
+}
+
+/* Material 3 Rounded Avatar/Icon Box */
 .ic {
   flex: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--md-shape-m);
   display: grid;
   place-items: center;
 }
 
 .ic svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 
 .b { background: var(--blue); }
@@ -308,24 +404,25 @@ main {
 }
 
 .card .t b {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   display: block;
   color: var(--text);
+  letter-spacing: 0.1px;
 }
 
 .card .t b i {
   font-style: normal;
-  font-size: 15px;
+  font-size: 13px;
   color: var(--sub);
   font-weight: 500;
   margin-left: 6px;
 }
 
 .card .t div {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 500;
-  margin-top: 1px;
+  margin-top: 2px;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -335,17 +432,17 @@ main {
 .card .t em {
   display: block;
   font-style: normal;
-  font-size: 15px;
+  font-size: 13px;
   color: var(--sub);
-  margin-top: 1px;
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .card .t em.sev-text {
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .card .t em.sev-light {
@@ -387,14 +484,43 @@ body.dark .card .t em.sev-heavy {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
+/* Material 3 Status Badges / Chips */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: lowercase;
+  vertical-align: middle;
+}
+
+.chip-done {
+  background: rgba(23, 160, 93, 0.14);
+  color: #17a05d;
+}
+
+.chip-missed {
+  background: rgba(240, 106, 104, 0.16);
+  color: #f06a68;
+}
+
+.chip-planned {
+  background: var(--tint);
+  color: var(--sub);
+}
+
+/* Action Icons */
 .done {
   flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--md-shape-m);
   background: #d8f0e4;
   display: grid;
   place-items: center;
@@ -407,23 +533,23 @@ body.dark .card .t em.sev-heavy {
 }
 
 .done svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke: #17a05d;
   fill: none;
-  stroke-width: 3;
+  stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* Background watermarks & wave */
+/* Decorative Watermark & Wave */
 .wm {
   position: absolute;
   left: 12px;
   bottom: 70px;
   width: 110px;
   height: 130px;
-  opacity: .9;
+  opacity: .85;
   --lf: var(--wm);
   --ls: none;
   pointer-events: none;
@@ -435,45 +561,53 @@ body.dark .card .t em.sev-heavy {
   left: -10%;
   right: -10%;
   bottom: -40px;
-  height: 150px;
+  height: 140px;
   border-radius: 50% 50% 0 0;
   background: var(--tint);
-  opacity: .55;
+  opacity: .45;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Floating action button (FAB) */
+/* ========================================================
+   Material Design 3: Floating Action Button (FAB)
+   ======================================================== */
 .fab {
   position: absolute;
-  right: 20px;
+  right: 16px;
   bottom: calc(92px + env(safe-area-inset-bottom, 0px));
   z-index: 15;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, var(--teal2), #168c7e);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--md-shape-l); /* Material 3 Standard Squircle FAB */
+  background: var(--teal);
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 20px rgba(22, 140, 126, .4);
+  box-shadow: var(--md-elevation-3);
   color: #fff;
-  transition: transform .2s, opacity .3s;
+  transition: transform .2s cubic-bezier(0.2, 0, 0, 1), box-shadow .2s cubic-bezier(0.2, 0, 0, 1), opacity .2s;
   cursor: pointer;
   border: none;
   outline: none;
 }
 
-[data-theme="dark"] .fab {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .5);
+.fab:hover, .fab:focus-visible {
+  box-shadow: var(--md-elevation-4);
+  transform: scale(1.04);
+}
+
+.fab:active {
+  box-shadow: var(--md-elevation-2);
+  transform: scale(0.96);
 }
 
 .fab svg {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   stroke: #fff;
-  stroke-width: 3.4;
+  stroke-width: 2.8;
   stroke-linecap: round;
-  transition: transform .3s;
+  transition: transform .3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .fab:active svg {
@@ -486,12 +620,15 @@ body.dark .card .t em.sev-heavy {
   transform: scale(.6);
 }
 
-/* Calendar */
+/* ========================================================
+   Material Design 3: Calendar
+   ======================================================== */
 .cal {
-  background: var(--card2);
+  background: var(--card);
   border-radius: 20px;
-  padding: 20px 14px 14px;
-  box-shadow: var(--shadow);
+  padding: 18px 14px 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--md-elevation-1);
   transition: background .4s;
   position: relative;
   z-index: 2;
@@ -500,70 +637,82 @@ body.dark .card .t em.sev-heavy {
 .cal .top {
   display: flex;
   align-items: center;
-  padding: 0 8px 16px;
+  padding: 0 8px 14px;
 }
 
 .cal h2 {
   flex: 1;
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 600;
   color: var(--text);
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.15px;
 }
 
+/* Material 3 IconButton */
 .nv {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   margin-left: 6px;
   cursor: pointer;
   background: var(--tint);
-  border: none;
+  border: 1px solid var(--border);
+  transition: background-color .15s, transform .15s;
+}
+
+.nv:active {
+  transform: scale(0.92);
 }
 
 .nv svg {
-  width: 24px;
-  height: 24px;
-  stroke: var(--sub);
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
   fill: none;
-  stroke-width: 2.4;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.wd, .days {
+.wd {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px 0;
+  gap: 4px 0;
   justify-items: center;
+  margin-bottom: 6px;
 }
 
 .wd span {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--sub);
-  padding: 6px 0 10px;
-  letter-spacing: .5px;
+  letter-spacing: 0.3px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px 0;
+  justify-items: center;
 }
 
 .d {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--day);
   color: var(--text);
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 2px;
-  transition: background .3s, transform .15s;
+  transition: background .2s, transform .15s, color .2s;
   border: none;
   cursor: pointer;
 }
@@ -571,9 +720,9 @@ body.dark .card .t em.sev-heavy {
 .d::after {
   content: "";
   position: absolute;
-  bottom: 5px;
-  width: 5px;
-  height: 5px;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--teal);
 }
@@ -589,7 +738,7 @@ body.dark .card .t em.sev-heavy {
 .d.s {
   background: var(--teal);
   color: #fff;
-  box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--teal);
+  box-shadow: 0 2px 6px rgba(26, 155, 140, 0.4);
 }
 
 .d.s::after {
@@ -605,19 +754,25 @@ body.dark .card .t em.sev-heavy {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 16px;
   background: var(--tint);
-  border-radius: 14px;
-  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--md-shape-l);
+  padding: 12px 16px;
   cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+
+.today:active {
+  transform: scale(0.985);
 }
 
 .today svg.c {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   stroke: var(--teal);
   fill: none;
-  stroke-width: 1.8;
+  stroke-width: 1.9;
   flex-shrink: 0;
 }
 
@@ -628,21 +783,22 @@ body.dark .card .t em.sev-heavy {
 
 .today b {
   display: block;
-  font-size: 17px;
+  font-size: 16px;
   color: var(--teal);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .today small {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--sub);
   font-weight: 500;
   display: block;
+  margin-top: 2px;
 }
 
 .today > svg:last-child {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke: var(--sub);
   fill: none;
   stroke-width: 2;
@@ -651,91 +807,195 @@ body.dark .card .t em.sev-heavy {
   flex-shrink: 0;
 }
 
-/* Settings screen */
-.set .card {
-  padding: 12px 14px 12px 14px;
+/* ========================================================
+   Material Design 3: Settings Groups
+   ======================================================== */
+.m3-settings-group {
+  margin-bottom: 20px;
+}
+
+.m3-settings-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--teal);
+  padding: 0 8px 8px;
+}
+
+.m3-settings-group-card {
+  background: var(--card);
+  border-radius: var(--md-shape-l);
+  border: 1px solid var(--border);
+  box-shadow: var(--md-elevation-1);
+  overflow: hidden;
+}
+
+.m3-settings-group-card .card {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+}
+
+.m3-settings-group-card .card:last-child {
+  border-bottom: none;
 }
 
 .set .t b {
-  font-size: 19px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .set .t div {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--sub);
   font-weight: 500;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
-/* Bottom Navigation */
-nav {
+/* Material Design 3: Switch */
+.m3-switch {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--tint);
+  border: 2px solid var(--sub);
+  cursor: pointer;
+  transition: background-color .25s cubic-bezier(0.2, 0, 0, 1), border-color .25s cubic-bezier(0.2, 0, 0, 1);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.m3-switch.on {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.m3-switch-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--sub);
+  transition: transform .25s cubic-bezier(0.2, 0, 0, 1), width .2s, height .2s, background-color .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m3-switch.on .m3-switch-thumb {
+  transform: translateX(20px);
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+}
+
+.m3-switch.on .m3-switch-thumb svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--teal);
+}
+
+/* ========================================================
+   Material Design 3: Navigation Bar (Bottom Navigation)
+   ======================================================== */
+nav, .m3-navigation-bar {
   position: relative;
   z-index: 16;
   display: flex;
+  align-items: center;
   justify-content: space-around;
+  height: calc(76px + env(safe-area-inset-bottom, 0px));
+  min-height: 76px;
   background: var(--nav);
-  border-radius: 28px 28px 0 0;
-  padding: 14px 8px calc(14px + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -4px 20px rgba(30, 90, 110, .06);
+  border-top: 1px solid var(--border);
+  border-radius: 24px 24px 0 0;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
   transition: background .4s;
   flex-shrink: 0;
 }
 
-nav button {
+nav button, .m3-nav-item {
   all: unset;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 2px 14px 6px;
-  font: 600 14.5px 'Manrope', sans-serif;
+  flex: 1;
+  max-width: 108px;
+  font: 500 12px 'Roboto', 'Manrope', sans-serif;
+  letter-spacing: 0.2px;
   color: var(--navi);
   position: relative;
-  transition: color .25s, transform .15s;
+  transition: color .2s, transform .15s;
+  user-select: none;
 }
 
-nav button:active {
-  transform: scale(.92);
+nav button:active, .m3-nav-item:active {
+  transform: scale(0.94);
 }
 
-nav button svg {
-  width: 28px;
-  height: 28px;
+.m3-nav-indicator {
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background-color .2s cubic-bezier(0.2, 0, 0, 1), transform .15s ease;
+}
+
+nav button svg, .m3-nav-indicator svg {
+  width: 24px;
+  height: 24px;
   fill: none;
-  stroke: currentColor;
-  stroke-width: 1.9;
+  stroke: var(--navi);
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: transform .25s;
+  transition: stroke .2s, transform .2s;
 }
 
-nav button::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -4px;
-  height: 3px;
-  border-radius: 3px;
-  background: var(--teal);
-  transform: scaleX(0);
-  transition: transform .3s;
-}
-
-nav button.on {
+nav button.on, .m3-nav-item.on, .m3-nav-item.active {
   color: var(--teal);
+  font-weight: 700;
 }
 
-nav button.on svg {
-  transform: translateY(-2px) scale(1.08);
+nav button.on .m3-nav-indicator, .m3-nav-item.on .m3-nav-indicator, .m3-nav-item.active .m3-nav-indicator {
+  background: var(--tint);
 }
 
-nav button.on::after {
-  transform: scaleX(1);
+nav button.on svg, .m3-nav-item.on svg, .m3-nav-item.active svg {
+  stroke: var(--teal);
+  transform: scale(1.04);
 }
 
-/* Bottom sheet overlay */
+.m3-nav-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--navi);
+  transition: color .2s, font-weight .2s;
+}
+
+nav button.on .m3-nav-label, .m3-nav-item.on .m3-nav-label {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* ========================================================
+   Material Design 3: Modal Bottom Sheet
+   ======================================================== */
 .ov {
   position: fixed;
   inset: 0;
@@ -760,13 +1020,14 @@ nav button.on::after {
   width: 100%;
   max-width: 430px;
   background: var(--card);
-  border-radius: 26px 26px 0 0;
-  padding: 12px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  border-radius: var(--md-shape-xl) var(--md-shape-xl) 0 0; /* Material 3 28px top corners */
+  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 0px));
   transform: translateY(100%);
-  transition: transform .35s cubic-bezier(.2, .8, .2, 1);
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, .25);
+  transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, .22);
   max-height: 85vh;
   overflow-y: auto;
+  border-top: 1px solid var(--border);
 }
 
 .ov.on .sheet {
@@ -778,10 +1039,9 @@ nav button.on::after {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 4px 0 16px;
+  padding: 6px 0 16px;
   cursor: grab;
   touch-action: pan-y;
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -789,69 +1049,63 @@ nav button.on::after {
   cursor: grabbing;
 }
 
-.grab-area .grab {
-  width: 46px;
-  height: 5px;
-  border-radius: 5px;
+.grab-area .grab, .sheet .grab {
+  width: 32px; /* Material 3 standard drag handle */
+  height: 4px;
+  border-radius: 2px;
   background: var(--sub);
-  opacity: .45;
+  opacity: .35;
   transition: opacity .2s, transform .2s, background-color .2s;
   pointer-events: none;
   margin: 0;
 }
 
 .grab-area:hover .grab {
-  opacity: .75;
+  opacity: .7;
 }
 
 .grab-area:active .grab {
-  opacity: .95;
-  transform: scale(1.12, 1.25);
+  opacity: 1;
+  transform: scale(1.15, 1.25);
   background: var(--teal);
 }
 
-.sheet .grab {
-  width: 44px;
-  height: 5px;
-  border-radius: 5px;
-  background: var(--sub);
-  opacity: .4;
-  margin: 0 auto 16px;
-}
-
 .sheet h3 {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
   margin-bottom: 14px;
   color: var(--text);
 }
 
-/* Option row */
+/* ========================================================
+   Material Design 3: Selection Options & Radio Items
+   ======================================================== */
 .opt {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px;
-  border-radius: 16px;
+  padding: 12px 14px;
+  border-radius: var(--md-shape-m);
   margin-bottom: 8px;
   background: var(--tint);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text);
-  border: 2px solid transparent;
-  transition: border-color .25s, transform .15s;
+  border: 1.5px solid transparent;
+  transition: border-color .2s, background-color .2s, transform .15s;
   cursor: pointer;
   text-align: left;
   width: 100%;
 }
 
 .opt:active {
-  transform: scale(0.98);
+  transform: scale(0.985);
 }
 
 .opt .ic {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 .opt .ic svg {
@@ -859,25 +1113,27 @@ nav button.on::after {
   height: 22px;
   stroke: var(--text);
   fill: none;
-  stroke-width: 1.9;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
+/* Material 3 Radio Control */
 .opt .r {
   margin-left: auto;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 2px solid var(--sub);
   display: grid;
   place-items: center;
-  transition: .25s;
+  transition: .2s;
   flex-shrink: 0;
 }
 
 .opt.on {
   border-color: var(--teal);
+  background: rgba(26, 155, 140, 0.12);
 }
 
 .opt.on .r {
@@ -893,38 +1149,40 @@ nav button.on::after {
   background: #fff;
 }
 
-/* Form controls */
+/* ========================================================
+   Material Design 3: Form Controls
+   ======================================================== */
 .form-group {
   margin-bottom: 14px;
 }
 
 .form-label {
   display: block;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--sub);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   margin-bottom: 6px;
 }
 
 .form-input, .form-textarea, .form-select {
   width: 100%;
   background: var(--tint);
-  border: 2px solid transparent;
-  border-radius: 14px;
-  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 10px; /* MD3 Outlined Container */
+  padding: 12px 14px;
   color: var(--text);
   font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   outline: none;
-  transition: border-color .25s;
+  transition: border-color .2s, box-shadow .2s;
   user-select: auto;
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
   border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal);
 }
 
 .form-input::placeholder, .form-textarea::placeholder {
@@ -932,41 +1190,53 @@ nav button.on::after {
   opacity: 0.7;
 }
 
+/* ========================================================
+   Material Design 3: Buttons
+   ======================================================== */
+/* Filled Primary Button */
 .btn-primary {
   width: 100%;
-  padding: 14px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, var(--teal2), #168c7e);
+  padding: 13px 20px;
+  border-radius: var(--md-shape-full); /* Material 3 Pill Button */
+  background: var(--teal);
   color: #fff;
   font-family: inherit;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.15px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(22, 140, 126, 0.35);
-  transition: transform .15s, opacity .2s;
+  box-shadow: var(--md-elevation-1);
+  transition: transform .15s, box-shadow .2s, background-color .2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
+.btn-primary:hover {
+  box-shadow: var(--md-elevation-2);
 }
 
+.btn-primary:active {
+  transform: scale(0.985);
+  box-shadow: var(--md-elevation-1);
+}
+
+/* Filled Tonal Secondary Button */
 .btn-secondary {
   width: 100%;
-  padding: 14px;
-  border-radius: 16px;
+  padding: 13px 20px;
+  border-radius: var(--md-shape-full); /* Material 3 Pill Button */
   background: var(--tint);
-  color: var(--text);
+  color: var(--teal);
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
+  letter-spacing: 0.15px;
   border: none;
   cursor: pointer;
-  transition: transform .15s;
+  transition: transform .15s, background-color .2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -974,20 +1244,23 @@ nav button.on::after {
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
+  transform: scale(0.985);
+  background: rgba(26, 155, 140, 0.18);
 }
 
+/* Tonal Danger Button */
 .btn-danger {
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(240, 106, 104, 0.15);
+  padding: 13px 20px;
+  border-radius: var(--md-shape-full); /* Material 3 Pill Button */
+  background: rgba(240, 106, 104, 0.14);
   color: #f06a68;
   font-family: inherit;
-  font-size: 16px;
-  font-weight: 700;
-  border: 1.5px solid rgba(240, 106, 104, 0.3);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.15px;
+  border: 1px solid rgba(240, 106, 104, 0.3);
   cursor: pointer;
-  transition: transform .15s;
+  transition: transform .15s, background-color .2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -995,10 +1268,50 @@ nav button.on::after {
 }
 
 .btn-danger:active {
-  transform: scale(0.98);
+  transform: scale(0.985);
 }
 
-/* Utilitary classes */
+/* ========================================================
+   Material Design 3: Snackbar / Toast
+   ======================================================== */
+.toast-banner {
+  position: fixed;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 90%;
+  width: 360px;
+  background: var(--card);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: var(--md-shape-m); /* M3 Snackbar Corner */
+  box-shadow: var(--md-elevation-3);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10000;
+  animation: slideToast 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  cursor: pointer;
+}
+
+@keyframes slideToast {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Utility classes */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -1011,39 +1324,3 @@ nav button.on::after {
 .w-full { width: 100%; }
 .text-center { text-align: center; }
 .hidden { display: none; }
-
-/* Toast Notification Banner */
-.toast-banner {
-  position: fixed;
-  top: calc(20px + env(safe-area-inset-top, 0px));
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 90%;
-  width: 380px;
-  background: var(--card);
-  color: var(--text);
-  padding: 13px 20px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-  border: 1.5px solid var(--border);
-  font-size: 14px;
-  font-weight: 700;
-  text-align: center;
-  z-index: 10000;
-  animation: slideToast 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-@keyframes slideToast {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -18px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-}
-
