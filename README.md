@@ -17,10 +17,10 @@
 - 🖼️ **Тематическая иконка (MD3 Themed Icon)** — монохромная иконка на рабочих столах Android 13+ в цвет системной палитры
 - 🌓 **Светлая и тёмная темы** — комфортное использование в любое время суток
 
-## 📸 Скриншот
+## 📸 Скриншоты
 
 <p align="center">
-  <img src="screenshots/Asthmatick_Screen.png" width="320" alt="Главный экран «Мой день» (Material Design 3)" />
+  <img src="screenshots/Asthmatick_Screen.png" width="32%" alt="Главный экран «Мой день»" /><img src="screenshots/Asthmatick_Screen2.png" width="32%" alt="Календарь" /><img src="screenshots/Asthmatick_Screen3.png" width="32%" alt="Настройки" />
 </p>
 
 ## 📥 Скачать
