@@ -35,7 +35,7 @@ export function SettingsScreen({
   onShowOnboarding,
 }: SettingsScreenProps) {
   const [activeModal, setActiveModal] = useState<
-    "none" | "notifications" | "sound" | "theme" | "info" | "export" | "import"
+    "none" | "notifications" | "sound" | "theme" | "info" | "export" | "import" | "privacy" | "terms"
   >("none");
   const [notificationGranted, setNotificationGranted] = useState(
     settings.notificationsEnabled
@@ -183,6 +183,9 @@ export function SettingsScreen({
         accept=".json,application/json"
         className="hidden"
       />
+
+      {/* Flex column wrapper to push legal footer to the very bottom */}
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}>
 
       {/* Group 1: Предпочтения */}
       <div className="m3-settings-group">
@@ -771,6 +774,155 @@ export function SettingsScreen({
             Понятно
           </button>
         </div>
+      </ModalSheet>
+
+      {/* Legal footer links */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "18px",
+          padding: "40px 16px 12px",
+          marginTop: "auto",
+          opacity: 0.45,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setActiveModal("privacy")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            fontSize: "12px",
+            color: "var(--sub)",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            lineHeight: 1.4,
+          }}
+        >
+          Политика конфиденциальности
+        </button>
+        <span style={{ fontSize: "12px", color: "var(--sub)" }}>·</span>
+        <button
+          type="button"
+          onClick={() => setActiveModal("terms")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            fontSize: "12px",
+            color: "var(--sub)",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            lineHeight: 1.4,
+          }}
+        >
+          Пользовательское соглашение
+        </button>
+      </div>
+
+      </div>{/* end flex wrapper */}
+
+      {/* MODAL: Privacy Policy */}
+      <ModalSheet
+        isOpen={activeModal === "privacy"}
+        onClose={() => setActiveModal("none")}
+      >
+        <h3>Политика конфиденциальности</h3>
+
+        <div style={{ fontSize: "13px", color: "var(--sub)", marginBottom: "16px" }}>
+          Последнее обновление: 13 октября 2026
+        </div>
+
+        <div style={{ fontSize: "14px", lineHeight: 1.6, color: "var(--text)", display: "flex", flexDirection: "column", gap: "14px", marginBottom: "20px" }}>
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>1. Хранение данных</div>
+            <div style={{ color: "var(--sub)" }}>
+              Все данные приложения (расписание приёма, записи о приступах, заметки и настройки) хранятся исключительно локально на вашем устройстве. Мы не собираем, не передаём и не имеем доступа к вашим персональным данным.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>2. Сторонние сервисы</div>
+            <div style={{ color: "var(--sub)" }}>
+              Приложение не использует сторонние аналитические системы, рекламные сети и не отправляет никаких данных на внешние серверы. Интернет-соединение не требуется и не используется.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>3. Разрешения</div>
+            <div style={{ color: "var(--sub)" }}>
+              Приложение запрашивает разрешение на отправку уведомлений исключительно для напоминаний о приёме лекарств. Никакие другие разрешения не запрашиваются.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>4. Удаление данных</div>
+            <div style={{ color: "var(--sub)" }}>
+              Все данные удаляются при удалении приложения с устройства.
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setActiveModal("none")}
+          className="btn-primary"
+        >
+          Понятно
+        </button>
+      </ModalSheet>
+
+      {/* MODAL: Terms of Use */}
+      <ModalSheet
+        isOpen={activeModal === "terms"}
+        onClose={() => setActiveModal("none")}
+      >
+        <h3>Пользовательское соглашение</h3>
+
+        <div style={{ fontSize: "13px", color: "var(--sub)", marginBottom: "16px" }}>
+          Последнее обновление: 13 октября 2026
+        </div>
+
+        <div style={{ fontSize: "14px", lineHeight: 1.6, color: "var(--text)", display: "flex", flexDirection: "column", gap: "14px", marginBottom: "20px" }}>
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>1. Назначение приложения</div>
+            <div style={{ color: "var(--sub)" }}>
+              Asthmatick — персональный трекер для отслеживания приступов астмы и контроля расписания приёма лекарств. Приложение не является медицинским продуктом и не предназначено для постановки диагнозов или замены консультации врача.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>2. Ответственность</div>
+            <div style={{ color: "var(--sub)" }}>
+              Разработчики приложения не несут ответственности за медицинские решения, принятые на основе данных из приложения. При любых вопросах о здоровье обращайтесь к квалифицированному медицинскому специалисту.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>3. Использование</div>
+            <div style={{ color: "var(--sub)" }}>
+              Используя приложение, вы соглашаетесь с условиями данного соглашения. Приложение предоставляется «как есть» без каких-либо гарантий работоспособности.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: "4px" }}>4. Изменения</div>
+            <div style={{ color: "var(--sub)" }}>
+              Разработчик оставляет за собой право обновлять данное соглашение. Актуальная версия всегда доступна в разделе настроек приложения.
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setActiveModal("none")}
+          className="btn-primary"
+        >
+          Понятно
+        </button>
       </ModalSheet>
     </section>
   );
