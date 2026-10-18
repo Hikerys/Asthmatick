@@ -25,6 +25,10 @@
 
 ## 📥 Скачать
 
+### RuStore
+Установите приложение из каталога [**RuStore**](https://www.rustore.ru/catalog/app/app.asthma.tick).
+
+### Прямая установка (GitHub Releases)
 1. Перейдите на страницу [**Releases**](../../releases)
 2. Скачайте актуальный файл `Asthmatick.apk`
 3. Запустите и установите на ваш Android-смартфон
