@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
-import { AppSettings, DatabaseBackup, NotificationSound, APP_VERSION } from "../types";
+import React, { useState } from "react";
+import { AppSettings, NotificationSound, APP_VERSION } from "../types";
 import {
-  createDatabaseBackup,
-  restoreDatabaseBackup,
+  exportSQLiteBackup,
+  importSQLiteBackup,
   saveSettings,
   loadScheduleEvents,
   loadAttacks,
@@ -17,7 +17,6 @@ import {
   SOUND_OPTIONS,
   playSoundPreview,
 } from "../notifications";
-import { exportDatabaseFile } from "../filePickerExport";
 import { ChevronRightIcon, LungLogo } from "./Icons";
 import { ModalSheet } from "./ModalSheet";
 
@@ -63,80 +62,34 @@ export function SettingsScreen({
   }, []);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
-  const [importJsonText, setImportJsonText] = useState("");
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const schedCount = loadScheduleEvents().length;
   const attackCount = loadAttacks().length;
   const notesCount = loadNotes().length;
   const totalCount = schedCount + attackCount + notesCount;
-  const backupFilename = `asthmatick_backup_${new Date().toISOString().slice(0, 10)}.json`;
-
-  const handleCopyExportJson = async () => {
-    try {
-      const backup = createDatabaseBackup();
-      const jsonStr = JSON.stringify(backup, null, 2);
-      await navigator.clipboard.writeText(jsonStr);
-      setExportNotice("✓ Данные скопированы в буфер обмена!");
-      setTimeout(() => setExportNotice(null), 3500);
-    } catch (err) {
-      setExportNotice("Ошибка копирования в буфер обмена.");
-    }
-  };
+  const backupFilename = `asthmatick_backup_${new Date().toISOString().slice(0, 10)}.db`;
 
   const handleExportToFile = async () => {
     try {
-      const backup = createDatabaseBackup();
-      const jsonStr = JSON.stringify(backup, null, 2);
-      const res = await exportDatabaseFile(backupFilename, jsonStr);
-      if (res.message) {
-        setExportNotice(res.message);
-      }
-      setTimeout(() => setExportNotice(null), 4000);
+      const saved = await exportSQLiteBackup(backupFilename);
+      setExportNotice(saved ? "✓ Резервная копия SQLite сохранена." : "Сохранение отменено.");
     } catch (err: any) {
-      setExportNotice("Ошибка при сохранении файла: " + (err?.message || err));
+      setExportNotice("Ошибка экспорта: " + (err?.message || err));
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        processImportJson(text);
-      } catch (err) {
-        setImportStatus("Ошибка чтения файла резервной копии.");
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const processImportJson = (text: string) => {
+  const handleImportFromFile = async () => {
     try {
-      const parsed: DatabaseBackup = JSON.parse(text);
-      if (!parsed.packageId || parsed.packageId !== "app.asthma.tick") {
-        if (!confirm("Файл не помечен как резервная копия Asthmatick. Всё равно восстановить данные?")) {
-          return;
-        }
-      }
-      const success = restoreDatabaseBackup(parsed);
-      if (success) {
-        setImportStatus("✓ База данных успешно восстановлена!");
+      const restored = await importSQLiteBackup();
+      if (restored) {
         onDataRestored();
+        setImportStatus("✓ База данных восстановлена.");
         setTimeout(() => {
           setActiveModal("none");
           setImportStatus(null);
-          setImportJsonText("");
         }, 1500);
-      } else {
-        setImportStatus("Ошибка: поврежденная структура данных.");
       }
-    } catch (err) {
-      setImportStatus("Ошибка: некорректный JSON формат.");
+    } catch (err: any) {
+      setImportStatus("Ошибка импорта: выберите корректную копию Asthmatick .db. " + (err?.message || ""));
     }
   };
 
@@ -176,14 +129,6 @@ export function SettingsScreen({
 
   return (
     <section className="screen set on" id="set">
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        accept=".json,application/json"
-        className="hidden"
-      />
-
       {/* Flex column wrapper to push legal footer to the very bottom */}
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}>
 
@@ -620,16 +565,9 @@ export function SettingsScreen({
             onClick={handleExportToFile}
             className="btn-primary"
           >
-            Скачать файл на устройства
+            Сохранить файл .db
           </button>
 
-          <button
-            type="button"
-            onClick={handleCopyExportJson}
-            className="btn-secondary"
-          >
-            Скопировать JSON в буфер обмена
-          </button>
         </div>
       </ModalSheet>
 
@@ -641,29 +579,17 @@ export function SettingsScreen({
         <h3>Импорт базы данных</h3>
 
         <div style={{ fontSize: "14px", color: "var(--sub)", marginBottom: "12px" }}>
-          Выберите файл резервной копии .json или вставьте текст ниже:
+          Выберите резервную копию Asthmatick в формате SQLite (.db). Текущие записи будут заменены данными из файла.
         </div>
 
         <button
           type="button"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleImportFromFile}
           className="btn-primary"
           style={{ marginBottom: "14px" }}
         >
-          Выбрать файл .json с устройства
+          Выбрать файл .db с устройства
         </button>
-
-        <div className="form-group">
-          <label className="form-label">Или вставьте JSON текст:</label>
-          <textarea
-            rows={3}
-            value={importJsonText}
-            onChange={(e) => setImportJsonText(e.target.value)}
-            placeholder="Вставьте сюда скопированный JSON код..."
-            className="form-textarea"
-            style={{ fontSize: "13px" }}
-          />
-        </div>
 
         {importStatus && (
           <div
@@ -679,17 +605,6 @@ export function SettingsScreen({
           >
             {importStatus}
           </div>
-        )}
-
-        {importJsonText.trim().length > 0 && (
-          <button
-            type="button"
-            onClick={() => processImportJson(importJsonText)}
-            className="btn-primary"
-            style={{ marginBottom: "8px" }}
-          >
-            Восстановить из вставленного текста
-          </button>
         )}
 
         <button

@@ -7,6 +7,8 @@ interface DatePickerModalProps {
   value: string; // "YYYY-MM-DD"
   onChange: (date: string) => void;
   onClose: () => void;
+  showQuickSelection?: boolean;
+  title?: string;
 }
 
 const MONTH_NAMES = [
@@ -31,6 +33,8 @@ export function DatePickerModal({
   value,
   onChange,
   onClose,
+  showQuickSelection = true,
+  title = "Выбор даты",
 }: DatePickerModalProps) {
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [viewDate, setViewDate] = useState(() => new Date());
@@ -104,13 +108,12 @@ export function DatePickerModal({
 
   return (
     <ModalSheet isOpen={isOpen} onClose={onClose} zIndex={60}>
-      <h3 style={{ marginBottom: "6px" }}>Выбор даты</h3>
+      <h3 style={{ marginBottom: "6px" }}>{title}</h3>
       <div style={{ fontSize: "14px", color: "var(--sub)", marginBottom: "16px" }}>
         {formattedSelectedRu}
       </div>
 
-      {/* Quick Selection Chips: Вчера, Сегодня, Завтра */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+      {showQuickSelection && <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
         <button
           type="button"
           onClick={() => handleSelectQuick(yesterday)}
@@ -171,7 +174,7 @@ export function DatePickerModal({
         >
           Завтра
         </button>
-      </div>
+      </div>}
 
       {/* Mini Calendar View */}
       <div

@@ -1,4 +1,12 @@
-import { ScheduleEvent, AttackRecord, NoteRecord, AppSettings, DatabaseBackup, Severity, APP_VERSION } from "./types";
+import { Capacitor, registerPlugin } from "@capacitor/core";
+import { ScheduleEvent, AttackRecord, NoteRecord, AppSettings, Severity } from "./types";
+
+const NativeDatabase = registerPlugin<{
+  initialize(options: { legacy: string }): Promise<{ snapshot: string }>;
+  save(options: { snapshot: string }): Promise<void>;
+  exportDatabase(options: { filename: string }): Promise<{ success?: boolean; cancelled?: boolean }>;
+  importDatabase(): Promise<{ success?: boolean; cancelled?: boolean; snapshot?: string }>;
+}>("AsthmatickDatabase");
 
 const SCHEDULE_KEY = "asthmatick_schedule_events";
 const ATTACKS_KEY = "asthmatick_attacks";
@@ -26,58 +34,106 @@ export function getIsoDayOfWeek(date: Date): number {
   return day === 0 ? 7 : day;
 }
 
-export function loadScheduleEvents(): ScheduleEvent[] {
-  try {
-    const raw = localStorage.getItem(SCHEDULE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+interface Snapshot {
+  scheduleEvents: ScheduleEvent[];
+  attacks: AttackRecord[];
+  notes: NoteRecord[];
+  settings: AppSettings;
+}
+
+const DATABASE_NAME = "asthmatick";
+const DATABASE_STORE = "data";
+let snapshot: Snapshot = { scheduleEvents: [], attacks: [], notes: [], settings: DEFAULT_SETTINGS };
+let pendingSave: Promise<void> = Promise.resolve();
+let database: IDBDatabase | null = null;
+
+function legacySnapshot(): Snapshot {
+  const read = (key: string, fallback: unknown) => {
+    try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
+    catch { return fallback; }
+  };
+  const records = <T extends { id: string }>(key: string): T[] => {
+    const value = read(key, []);
+    return Array.isArray(value) ? value.filter((item): item is T => item && typeof item.id === "string") : [];
+  };
+  const oldSettings = read(SETTINGS_KEY, {});
+  return {
+    scheduleEvents: records<ScheduleEvent>(SCHEDULE_KEY),
+    attacks: records<AttackRecord>(ATTACKS_KEY),
+    notes: records<NoteRecord>(NOTES_KEY),
+    settings: { ...DEFAULT_SETTINGS, ...(oldSettings && typeof oldSettings === "object" ? oldSettings : {}) },
+  };
+}
+
+function openDatabase(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DATABASE_NAME, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(DATABASE_STORE);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function readWeb(): Promise<Snapshot | undefined> {
+  return new Promise((resolve, reject) => {
+    const request = database!.transaction(DATABASE_STORE).objectStore(DATABASE_STORE).get("snapshot");
+    request.onsuccess = () => resolve(request.result as Snapshot | undefined);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function saveWeb(value: Snapshot): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = database!.transaction(DATABASE_STORE, "readwrite");
+    transaction.objectStore(DATABASE_STORE).put(value, "snapshot");
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
+
+async function writeSnapshot(value: Snapshot): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    await NativeDatabase.save({ snapshot: JSON.stringify(value) });
+  } else {
+    await saveWeb(value);
   }
 }
 
-export function saveScheduleEvents(events: ScheduleEvent[]): void {
-  localStorage.setItem(SCHEDULE_KEY, JSON.stringify(events));
-}
-
-export function loadAttacks(): AttackRecord[] {
-  try {
-    const raw = localStorage.getItem(ATTACKS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+export async function initializeStorage(): Promise<void> {
+  const legacy = legacySnapshot();
+  if (Capacitor.isNativePlatform()) {
+    const result = await NativeDatabase.initialize({ legacy: JSON.stringify(legacy) });
+    snapshot = JSON.parse(result.snapshot) as Snapshot;
+  } else {
+    database = await openDatabase();
+    const saved = await readWeb();
+    snapshot = saved || legacy;
+    if (!saved) await saveWeb(snapshot);
   }
+  snapshot.settings = { ...DEFAULT_SETTINGS, ...snapshot.settings };
+  // Legacy data stays available until migration is committed. Clearing browser data
+  // afterwards does not affect Android's SQLite database.
 }
 
-export function saveAttacks(attacks: AttackRecord[]): void {
-  localStorage.setItem(ATTACKS_KEY, JSON.stringify(attacks));
+function persist(): void {
+  const value = JSON.parse(JSON.stringify(snapshot)) as Snapshot;
+  pendingSave = pendingSave.catch(() => {}).then(() => writeSnapshot(value));
+  pendingSave.catch((error) => {
+    console.error("Could not save Asthmatick data", error);
+    window.dispatchEvent(new Event("asthmatick-storage-error"));
+  });
 }
 
-export function loadNotes(): NoteRecord[] {
-  try {
-    const raw = localStorage.getItem(NOTES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveNotes(notes: NoteRecord[]): void {
-  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-}
-
-export function loadSettings(): AppSettings {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
-
-export function saveSettings(settings: AppSettings): void {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-}
+export function waitForStorage(): Promise<void> { return pendingSave; }
+export function loadScheduleEvents(): ScheduleEvent[] { return snapshot.scheduleEvents; }
+export function saveScheduleEvents(events: ScheduleEvent[]): void { snapshot.scheduleEvents = events; persist(); }
+export function loadAttacks(): AttackRecord[] { return snapshot.attacks; }
+export function saveAttacks(attacks: AttackRecord[]): void { snapshot.attacks = attacks; persist(); }
+export function loadNotes(): NoteRecord[] { return snapshot.notes; }
+export function saveNotes(notes: NoteRecord[]): void { snapshot.notes = notes; persist(); }
+export function loadSettings(): AppSettings { return snapshot.settings; }
+export function saveSettings(settings: AppSettings): void { snapshot.settings = settings; persist(); }
 
 // Get worst attack severity for a given date string ("YYYY-MM-DD")
 export function getWorstSeverityForDate(dateStr: string, attacks: AttackRecord[]): Severity | null {
@@ -205,40 +261,19 @@ export function getScheduleStatusInfo(
   }
 }
 
-// Export full backup
-export function createDatabaseBackup(): DatabaseBackup {
-  return {
-    version: APP_VERSION,
-    exportDate: new Date().toISOString(),
-    packageId: "app.asthma.tick",
-    scheduleEvents: loadScheduleEvents(),
-    attacks: loadAttacks(),
-    notes: loadNotes(),
-    settings: loadSettings(),
-  };
+export async function exportSQLiteBackup(filename: string): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) throw new Error("Экспорт SQLite доступен в приложении Android.");
+  await pendingSave;
+  const result = await NativeDatabase.exportDatabase({ filename });
+  return result.success === true;
 }
 
-// Import full backup
-export function restoreDatabaseBackup(backup: DatabaseBackup): boolean {
-  try {
-    if (!backup || !backup.packageId) {
-      throw new Error("Invalid backup format");
-    }
-    if (Array.isArray(backup.scheduleEvents)) {
-      saveScheduleEvents(backup.scheduleEvents);
-    }
-    if (Array.isArray(backup.attacks)) {
-      saveAttacks(backup.attacks);
-    }
-    if (Array.isArray(backup.notes)) {
-      saveNotes(backup.notes);
-    }
-    if (backup.settings) {
-      saveSettings({ ...DEFAULT_SETTINGS, ...backup.settings });
-    }
-    return true;
-  } catch (err) {
-    console.error("Failed to restore backup:", err);
-    return false;
-  }
+export async function importSQLiteBackup(): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) throw new Error("Импорт SQLite доступен в приложении Android.");
+  await pendingSave;
+  const result = await NativeDatabase.importDatabase();
+  if (!result.success || !result.snapshot) return false;
+  const imported = JSON.parse(result.snapshot) as Snapshot;
+  snapshot = { ...imported, settings: { ...DEFAULT_SETTINGS, ...imported.settings } };
+  return true;
 }

@@ -26,6 +26,7 @@ import { Header } from "./components/Header";
 import { BottomNav, NavTab } from "./components/BottomNav";
 import { MyDayScreen } from "./components/MyDayScreen";
 import { CalendarScreen } from "./components/CalendarScreen";
+import { StatisticsScreen } from "./components/StatisticsScreen";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { FabMenu } from "./components/FabMenu";
@@ -42,8 +43,8 @@ export function App() {
   const [attacks, setAttacks] = useState<AttackRecord[]>(() => loadAttacks());
   const [notes, setNotes] = useState<NoteRecord[]>(() => loadNotes());
 
-  const [currentTab, setCurrentTab] = useState<NavTab>("myday");
-  const [tabHistory, setTabHistory] = useState<NavTab[]>(["myday"]);
+  const [currentTab, setCurrentTab] = useState<NavTab | "settings">("myday");
+  const [tabHistory, setTabHistory] = useState<(NavTab | "settings")[]>(["myday"]);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(
     () => !settings.hasSeenOnboarding
@@ -62,6 +63,12 @@ export function App() {
     return () => clearTimeout(t);
   }, [toastMessage]);
 
+  useEffect(() => {
+    const onStorageError = () => showToast("Не удалось сохранить данные. Проверьте свободное место и перезапустите приложение.");
+    window.addEventListener("asthmatick-storage-error", onStorageError);
+    return () => window.removeEventListener("asthmatick-storage-error", onStorageError);
+  }, []);
+
   // Active add modals
   const [activeModal, setActiveModal] = useState<
     "none" | "schedule" | "attack" | "note"
@@ -74,7 +81,7 @@ export function App() {
   const [editingItem, setEditingItem] = useState<TimelineItem | null>(null);
 
   // Navigation tab selection
-  const handleSelectTab = (tab: NavTab) => {
+  const handleSelectTab = (tab: NavTab | "settings") => {
     if (tab === currentTab) return;
     if (tab === "myday") {
       setTabHistory(["myday"]);
@@ -419,7 +426,7 @@ export function App() {
       />
 
       {/* Main Header */}
-      <Header />
+      <Header onOpenSettings={() => handleSelectTab("settings")} settingsOpen={currentTab === "settings"} />
 
       {/* Screen Views */}
       <main
@@ -444,6 +451,10 @@ export function App() {
             onSelectItem={(item) => setSelectedItem(item)}
             onToggleCompleteItem={handleToggleComplete}
           />
+        )}
+
+        {currentTab === "statistics" && (
+          <StatisticsScreen scheduleEvents={scheduleEvents} attacks={attacks} />
         )}
 
         {currentTab === "settings" && (

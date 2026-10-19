@@ -6,8 +6,8 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        registerPlugin(FilePickerExportPlugin.class);
         registerPlugin(DynamicThemePlugin.class);
+        registerPlugin(DatabasePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

@@ -1,26 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
-import { loadSettings } from "./storage";
+import { initializeStorage, loadSettings } from "./storage";
 import "./index.css";
 
-// Apply initial theme immediately before rendering
-try {
-  const initialTheme = loadSettings().theme;
-  document.documentElement.setAttribute("data-theme", initialTheme);
-  document.documentElement.className = initialTheme;
-  document.body.setAttribute("data-theme", initialTheme);
-  document.body.className = initialTheme;
-} catch (e) {
-  console.warn("Could not load initial theme:", e);
+async function start() {
+  const rootElement = document.getElementById("root");
+  if (!rootElement) return;
+  try {
+    await initializeStorage();
+    const initialTheme = loadSettings().theme;
+    document.documentElement.setAttribute("data-theme", initialTheme);
+    document.documentElement.className = initialTheme;
+    document.body.setAttribute("data-theme", initialTheme);
+    document.body.className = initialTheme;
+    ReactDOM.createRoot(rootElement).render(<React.StrictMode><App /></React.StrictMode>);
+  } catch (error) {
+    console.error("Could not open Asthmatick database", error);
+    rootElement.innerHTML = '<main style="padding:24px;font-family:sans-serif"><h1>Не удалось открыть данные</h1><p>Перезапустите приложение. Не очищайте данные приложения, чтобы сохранить записи.</p></main>';
+  }
 }
 
-const rootElement = document.getElementById("root");
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-}
+void start();

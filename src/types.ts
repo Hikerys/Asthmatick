@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.2.1";
+export const APP_VERSION = "1.3.0";
 
 export type Severity = "light" | "medium" | "heavy";
 
@@ -46,16 +46,6 @@ export interface AppSettings {
   notificationsEnabled: boolean;
   notificationSound?: NotificationSound;
   hasSeenOnboarding: boolean;
-}
-
-export interface DatabaseBackup {
-  version: string;
-  exportDate: string;
-  packageId: string;
-  scheduleEvents: ScheduleEvent[];
-  attacks: AttackRecord[];
-  notes: NoteRecord[];
-  settings: AppSettings;
 }
 
 export type TimelineItem =
