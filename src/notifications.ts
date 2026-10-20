@@ -1,5 +1,9 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { ScheduleEvent, NotificationSound } from "./types";
+import { loadSettings } from "./storage";
+import { translate } from "./i18n";
+
+const localize = (copy: string) => translate(copy, loadSettings().language);
 
 export interface SoundOption {
   id: NotificationSound;
@@ -56,8 +60,8 @@ export async function setupNotificationChannel(sound: NotificationSound = "syste
 
     await LocalNotifications.createChannel({
       id: channelId,
-      name: `Напоминания (${soundOpt?.title || "Системный"})`,
-      description: "Напоминания о приёме лекарств и ингаляций",
+      name: localize(`Напоминания (${soundOpt?.title || "Системный"})`),
+      description: localize("Напоминания о приёме лекарств и ингаляций"),
       importance: 4, // IMPORTANCE_HIGH (4) on Android: heads-up banner, sound, vibration
       visibility: 1, // VISIBILITY_PUBLIC (shows on lockscreen)
       vibration: true,
@@ -130,8 +134,8 @@ export async function sendTestNotification(sound: NotificationSound = "system"):
     await LocalNotifications.schedule({
       notifications: [
         {
-          title: "Asthmatick: Тестовое напоминание",
-          body: `Звук: ${soundOpt?.title || "Системный"}. Уведомления успешно работают!`,
+          title: localize("Asthmatick: Тестовое напоминание"),
+          body: localize(`Звук: ${soundOpt?.title || "Системный"}. Уведомления успешно работают!`),
           id: Math.floor(Math.random() * 100000) + 1,
           channelId,
           sound: soundOpt?.soundFile,
@@ -143,11 +147,11 @@ export async function sendTestNotification(sound: NotificationSound = "system"):
     });
   } catch (err) {
     if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("Asthmatick: Тестовое напоминание", {
-        body: `Звук: ${soundOpt?.title || "Системный"}. Уведомления успешно работают!`,
+      new Notification(localize("Asthmatick: Тестовое напоминание"), {
+        body: localize(`Звук: ${soundOpt?.title || "Системный"}. Уведомления успешно работают!`),
       });
     } else {
-      alert("Уведомление от Asthmatick: Проверка напоминаний успешна!");
+      alert(localize("Уведомление от Asthmatick: Проверка напоминаний успешна!"));
     }
   }
 }
@@ -217,7 +221,7 @@ export async function syncScheduleNotifications(
         const notifId = getDeterministicNotificationId(ev.id, dayOfWeek);
 
         notifs.push({
-          title: "Asthmatick: Время по плану",
+          title: localize("Asthmatick: Время по плану"),
           body: ev.title + (ev.note ? ` (${ev.note})` : ""),
           id: notifId,
           channelId,

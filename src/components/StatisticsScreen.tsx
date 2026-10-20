@@ -1,3 +1,4 @@
+import { currentLocale } from "../i18n";
 import React, { useMemo, useState } from "react";
 import type { AttackRecord, ScheduleEvent } from "../types";
 import { formatDateKey, getIsoDayOfWeek, getScheduleStatusInfo } from "../storage";
@@ -6,7 +7,7 @@ import { DatePickerModal } from "./DatePickerModal";
 type Period = "week" | "month" | "custom";
 const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 const addDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
-const displayDate = (date: Date) => date.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+const displayDate = (date: Date) => date.toLocaleDateString(currentLocale(), { day: "numeric", month: "long", year: "numeric" });
 
 interface Props {
   scheduleEvents: ScheduleEvent[];

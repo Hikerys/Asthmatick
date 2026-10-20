@@ -1,3 +1,5 @@
+import { currentTime, displayTime } from "../time";
+import { currentLocale } from "../i18n";
 import React, { useState, useEffect } from "react";
 import { AttackRecord, Severity } from "../types";
 import { formatDateKey } from "../storage";
@@ -24,7 +26,7 @@ export function AddAttackModal({
   const [date, setDate] = useState(initial?.date || targetDate || formatDateKey(new Date()));
   const [time, setTime] = useState(
     initial?.time ||
-      new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
+      currentTime()
   );
   const [trigger, setTrigger] = useState(initial?.trigger || "");
   const [note, setNote] = useState(initial?.note || "");
@@ -37,7 +39,7 @@ export function AddAttackModal({
       setDate(initial?.date || targetDate || formatDateKey(new Date()));
       setTime(
         initial?.time ||
-          new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
+          currentTime()
       );
       setTrigger(initial?.trigger || "");
       setNote(initial?.note || "");
@@ -55,7 +57,7 @@ export function AddAttackModal({
     const [y, m, d] = date.split("-").map(Number);
     if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
       const parsed = new Date(y, m - 1, d);
-      return parsed.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+      return parsed.toLocaleDateString(currentLocale(), { day: "numeric", month: "short" });
     }
     return date;
   };
@@ -188,7 +190,7 @@ export function AddAttackModal({
                 textAlign: "left",
               }}
             >
-              <span>{time}</span>
+              <span>{displayTime(time)}</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sub)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />

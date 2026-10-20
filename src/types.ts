@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.3.0";
+export const APP_VERSION = "1.3.1";
 
 export type Severity = "light" | "medium" | "heavy";
 
@@ -43,6 +43,7 @@ export type NotificationSound =
 
 export interface AppSettings {
   theme: "light" | "dark" | "system";
+  language: "ru" | "en";
   notificationsEnabled: boolean;
   notificationSound?: NotificationSound;
   hasSeenOnboarding: boolean;

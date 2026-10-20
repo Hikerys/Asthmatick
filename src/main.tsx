@@ -10,6 +10,7 @@ async function start() {
   try {
     await initializeStorage();
     const initialTheme = loadSettings().theme;
+    document.documentElement.lang = loadSettings().language;
     document.documentElement.setAttribute("data-theme", initialTheme);
     document.documentElement.className = initialTheme;
     document.body.setAttribute("data-theme", initialTheme);

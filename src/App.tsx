@@ -1,3 +1,4 @@
+import { currentTime, displayTime } from "./time";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { App as CapApp } from "@capacitor/app";
 import {
@@ -34,6 +35,7 @@ import { AddScheduleModal } from "./components/AddScheduleModal";
 import { AddAttackModal } from "./components/AddAttackModal";
 import { AddNoteModal } from "./components/AddNoteModal";
 import { ItemDetailModal } from "./components/ItemDetailModal";
+import { observeTranslations, translate } from "./i18n";
 
 export function App() {
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
@@ -50,6 +52,12 @@ export function App() {
     () => !settings.hasSeenOnboarding
   );
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.documentElement.lang = settings.language;
+    const root = document.getElementById("root");
+    return root ? observeTranslations(root, settings.language) : undefined;
+  }, [settings.language]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -224,7 +232,7 @@ export function App() {
     } else {
       clearAllNotifications();
     }
-  }, [scheduleEvents, settings.notificationsEnabled, settings.notificationSound]);
+  }, [scheduleEvents, settings.notificationsEnabled, settings.notificationSound, settings.language]);
 
   // Re-sync notifications when app resumes from background or settings
   useEffect(() => {
@@ -239,7 +247,7 @@ export function App() {
       window.removeEventListener("focus", handleResume);
       document.removeEventListener("visibilitychange", handleResume);
     };
-  }, [scheduleEvents, settings.notificationsEnabled]);
+  }, [scheduleEvents, settings.notificationsEnabled, settings.notificationSound, settings.language]);
 
   const refreshAllData = () => {
     setScheduleEvents(loadScheduleEvents());
@@ -336,15 +344,15 @@ export function App() {
       if (!isDone) {
         const status = getScheduleStatusInfo(ev, todayStr, now);
         if (status.isTooEarly) {
-          showToast(`Еще слишком рано! Отметить выполнение можно с ${status.windowStartTime} по ${status.windowEndTime}`);
+          showToast(`Еще слишком рано! Отметить выполнение можно с ${displayTime(status.windowStartTime)} по ${displayTime(status.windowEndTime)}`);
           return;
         }
         if (status.isMissed) {
-          showToast(`Время выполнения пропущено! Отметить можно было только до ${status.windowEndTime}`);
+          showToast(`Время выполнения пропущено! Отметить можно было только до ${displayTime(status.windowEndTime)}`);
           return;
         }
 
-        const nowTimeStr = now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+        const nowTimeStr = currentTime();
         const updatedDates = [...(ev.completedDates || []), todayStr];
         const updatedTimes = { ...(ev.completionTimes || {}), [todayStr]: nowTimeStr };
 
@@ -353,7 +361,7 @@ export function App() {
         );
         saveScheduleEvents(updated);
         setScheduleEvents(updated);
-        showToast(`✓ Выполнено в ${nowTimeStr}!`);
+        showToast(`✓ Выполнено в ${displayTime(nowTimeStr, settings.language)}!`);
       } else {
         const updatedDates = (ev.completedDates || []).filter((d) => d !== todayStr);
         const updatedTimes = { ...(ev.completionTimes || {}) };
@@ -385,7 +393,7 @@ export function App() {
 
   // Delete an item
   const handleDeleteItem = (item: TimelineItem) => {
-    if (!confirm("Вы уверены, что хотите удалить эту запись?")) return;
+    if (!confirm(translate("Вы уверены, что хотите удалить эту запись?", settings.language))) return;
 
     if (item.type === "schedule") {
       const updated = scheduleEvents.filter((ev) => ev.id !== item.id);
@@ -423,6 +431,13 @@ export function App() {
       <OnboardingModal
         isOpen={showOnboarding}
         onComplete={handleCompleteOnboarding}
+        language={settings.language}
+        onLanguageChange={(language) => {
+          document.documentElement.lang = language;
+          const updated = { ...settings, language };
+          saveSettings(updated);
+          setSettings(updated);
+        }}
       />
 
       {/* Main Header */}

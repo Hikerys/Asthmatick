@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ModalSheet } from "./ModalSheet";
+import { displayTime, normalizeTime } from "../time";
 
 interface TimePickerModalProps {
   isOpen: boolean;
@@ -16,11 +17,12 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const [hour, setHour] = useState(8);
   const [minute, setMinute] = useState(0);
+  const isEnglish = document.documentElement.lang === "en";
 
   // Sync with initial value when modal opens
   useEffect(() => {
     if (isOpen) {
-      const [hStr, mStr] = (value || "08:00").split(":");
+      const [hStr, mStr] = normalizeTime(value || "08:00").split(":");
       const parsedH = parseInt(hStr, 10);
       const parsedM = parseInt(mStr, 10);
       setHour(isNaN(parsedH) ? 8 : Math.max(0, Math.min(23, parsedH)));
@@ -69,6 +71,7 @@ export function TimePickerModal({
 
       {/* Main Digital Stepper Block */}
       <div
+        className="time-stepper"
         style={{
           display: "flex",
           alignItems: "center",
@@ -116,7 +119,7 @@ export function TimePickerModal({
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            {String(hour).padStart(2, "0")}
+            {isEnglish ? hour % 12 || 12 : String(hour).padStart(2, "0")}
           </div>
 
           <button
@@ -222,6 +225,18 @@ export function TimePickerModal({
 
           <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--sub)" }}>минуты</span>
         </div>
+
+        {isEnglish && (
+          <button
+            type="button"
+            className="time-period-toggle"
+            onClick={() => setHour((previous) => (previous + 12) % 24)}
+            aria-label="Switch AM or PM"
+          >
+            <span className={hour < 12 ? "active" : ""}>AM</span>
+            <span className={hour >= 12 ? "active" : ""}>PM</span>
+          </button>
+        )}
       </div>
 
       {/* Quick minute offsets */}
@@ -343,7 +358,7 @@ export function TimePickerModal({
               cursor: "pointer",
             }}
           >
-            🌅 Утро 08:00
+            {isEnglish ? "🌅 Morning 8:00 AM" : "🌅 Утро 08:00"}
           </button>
           <button
             type="button"
@@ -361,7 +376,7 @@ export function TimePickerModal({
               cursor: "pointer",
             }}
           >
-            ☀️ День 13:00
+            {isEnglish ? "☀️ Afternoon 1:00 PM" : "☀️ День 13:00"}
           </button>
           <button
             type="button"
@@ -379,7 +394,7 @@ export function TimePickerModal({
               cursor: "pointer",
             }}
           >
-            🌆 Вечер 19:00
+            {isEnglish ? "🌆 Evening 7:00 PM" : "🌆 Вечер 19:00"}
           </button>
           <button
             type="button"
@@ -397,7 +412,7 @@ export function TimePickerModal({
               cursor: "pointer",
             }}
           >
-            🌙 На ночь 22:00
+            {isEnglish ? "🌙 Bedtime 10:00 PM" : "🌙 На ночь 22:00"}
           </button>
         </div>
       </div>
@@ -418,7 +433,7 @@ export function TimePickerModal({
           className="btn-primary"
           style={{ flex: 1.4 }}
         >
-          Выбрать {formattedTime}
+          Выбрать {displayTime(formattedTime)}
         </button>
       </div>
     </ModalSheet>

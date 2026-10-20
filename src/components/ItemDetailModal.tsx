@@ -1,3 +1,4 @@
+import { displayTime } from "../time";
 import React, { useRef } from "react";
 import { TimelineItem } from "../types";
 import { InhalerIcon, AttackIcon, NoteIcon } from "./Icons";
@@ -69,7 +70,7 @@ export function ItemDetailModal({
             {typeBadge}
           </span>
           <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text)" }}>
-            {currentItem.time}
+            {displayTime(currentItem.time)}
           </div>
         </div>
       </div>
@@ -141,12 +142,12 @@ export function ItemDetailModal({
             >
               {currentItem.completed
                 ? currentItem.originalTime && currentItem.originalTime !== currentItem.time
-                  ? `✓ Выполнено в ${currentItem.time} (по плану: ${currentItem.originalTime})`
+                  ? `✓ Выполнено в ${displayTime(currentItem.time)} (по плану: ${displayTime(currentItem.originalTime)})`
                   : "✓ Выполнено"
                 : currentItem.isMissed
-                ? `❌ Пропущено (доступно было до ${currentItem.windowEndTime})`
+                ? `❌ Пропущено (доступно было до ${displayTime(currentItem.windowEndTime || "")})`
                 : currentItem.isTooEarly
-                ? `⏳ Запланировано (доступно с ${currentItem.windowStartTime} до ${currentItem.windowEndTime})`
+                ? `⏳ Запланировано (доступно с ${displayTime(currentItem.windowStartTime || "")} до ${displayTime(currentItem.windowEndTime || "")})`
                 : "⏳ Запланировано"}
             </div>
           </div>

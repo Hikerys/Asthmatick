@@ -1,5 +1,6 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { ScheduleEvent, AttackRecord, NoteRecord, AppSettings, Severity } from "./types";
+import { normalizeTime } from "./time";
 
 const NativeDatabase = registerPlugin<{
   initialize(options: { legacy: string }): Promise<{ snapshot: string }>;
@@ -15,6 +16,7 @@ const SETTINGS_KEY = "asthmatick_settings";
 
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
+  language: "ru",
   notificationsEnabled: false,
   notificationSound: "system",
   hasSeenOnboarding: false,
@@ -112,8 +114,28 @@ export async function initializeStorage(): Promise<void> {
     if (!saved) await saveWeb(snapshot);
   }
   snapshot.settings = { ...DEFAULT_SETTINGS, ...snapshot.settings };
+  normalizeSnapshotTimes();
   // Legacy data stays available until migration is committed. Clearing browser data
   // afterwards does not affect Android's SQLite database.
+}
+
+function normalizeSnapshotTimes(): void {
+  let changed = false;
+  const fix = (value: string) => {
+    const normalized = normalizeTime(value);
+    if (normalized !== value) changed = true;
+    return normalized;
+  };
+  snapshot.scheduleEvents = snapshot.scheduleEvents.map((event) => ({
+    ...event,
+    time: fix(event.time),
+    completionTimes: event.completionTimes && Object.fromEntries(
+      Object.entries(event.completionTimes).map(([date, time]) => [date, fix(time)])
+    ),
+  }));
+  snapshot.attacks = snapshot.attacks.map((attack) => ({ ...attack, time: fix(attack.time) }));
+  snapshot.notes = snapshot.notes.map((note) => ({ ...note, time: fix(note.time) }));
+  if (changed) persist();
 }
 
 function persist(): void {
@@ -127,11 +149,11 @@ function persist(): void {
 
 export function waitForStorage(): Promise<void> { return pendingSave; }
 export function loadScheduleEvents(): ScheduleEvent[] { return snapshot.scheduleEvents; }
-export function saveScheduleEvents(events: ScheduleEvent[]): void { snapshot.scheduleEvents = events; persist(); }
+export function saveScheduleEvents(events: ScheduleEvent[]): void { snapshot.scheduleEvents = events.map((event) => ({ ...event, time: normalizeTime(event.time) })); persist(); }
 export function loadAttacks(): AttackRecord[] { return snapshot.attacks; }
-export function saveAttacks(attacks: AttackRecord[]): void { snapshot.attacks = attacks; persist(); }
+export function saveAttacks(attacks: AttackRecord[]): void { snapshot.attacks = attacks.map((attack) => ({ ...attack, time: normalizeTime(attack.time) })); persist(); }
 export function loadNotes(): NoteRecord[] { return snapshot.notes; }
-export function saveNotes(notes: NoteRecord[]): void { snapshot.notes = notes; persist(); }
+export function saveNotes(notes: NoteRecord[]): void { snapshot.notes = notes.map((note) => ({ ...note, time: normalizeTime(note.time) })); persist(); }
 export function loadSettings(): AppSettings { return snapshot.settings; }
 export function saveSettings(settings: AppSettings): void { snapshot.settings = settings; persist(); }
 
@@ -275,5 +297,6 @@ export async function importSQLiteBackup(): Promise<boolean> {
   if (!result.success || !result.snapshot) return false;
   const imported = JSON.parse(result.snapshot) as Snapshot;
   snapshot = { ...imported, settings: { ...DEFAULT_SETTINGS, ...imported.settings } };
+  normalizeSnapshotTimes();
   return true;
 }

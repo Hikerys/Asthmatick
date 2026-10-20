@@ -120,6 +120,13 @@ export function SettingsScreen({
     setTimeout(() => setActiveModal("none"), 250);
   };
 
+  const handleSetLanguage = (language: AppSettings["language"]) => {
+    document.documentElement.lang = language;
+    const updated: AppSettings = { ...settings, language };
+    saveSettings(updated);
+    onUpdateSettings(updated);
+  };
+
   const handleSetSound = (sound: NotificationSound) => {
     playSoundPreview(sound);
     const updated: AppSettings = { ...settings, notificationSound: sound };
@@ -130,7 +137,7 @@ export function SettingsScreen({
   return (
     <section className="screen set on" id="set">
       {/* Flex column wrapper to push legal footer to the very bottom */}
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}>
+      <div className="settings-content">
 
       {/* Group 1: Предпочтения */}
       <div className="m3-settings-group">
@@ -251,7 +258,7 @@ export function SettingsScreen({
       </div>
 
       {/* Group 3: О приложении */}
-      <div className="m3-settings-group">
+      <div className="m3-settings-group about-group">
         <div className="m3-settings-group-title">О приложении</div>
         <div className="m3-settings-group-card">
           {/* Справочная информация */}
@@ -270,6 +277,19 @@ export function SettingsScreen({
               <div>О приложении и версия</div>
             </div>
             <ChevronRightIcon />
+          </div>
+          <div className="card language-setting">
+            <div className="ic g" aria-hidden="true">
+              <svg viewBox="0 0 28 28" fill="none" stroke="var(--teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="14" cy="14" r="10" />
+                <path d="M4 14h20M14 4c-3 3-4.5 6.3-4.5 10S11 21 14 24M14 4c3 3 4.5 6.3 4.5 10S17 21 14 24" />
+              </svg>
+            </div>
+            <div className="t"><b>Язык / Language</b><div>Русский / English</div></div>
+            <div className="language-switch" role="group" aria-label="Language / Язык">
+              <button type="button" className={settings.language === "ru" ? "selected" : ""} onClick={() => handleSetLanguage("ru")} aria-pressed={settings.language === "ru"}>RU</button>
+              <button type="button" className={settings.language === "en" ? "selected" : ""} onClick={() => handleSetLanguage("en")} aria-pressed={settings.language === "en"}>EN</button>
+            </div>
           </div>
         </div>
       </div>
@@ -693,6 +713,7 @@ export function SettingsScreen({
 
       {/* Legal footer links */}
       <div
+        className="settings-footer"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -744,6 +765,7 @@ export function SettingsScreen({
       <ModalSheet
         isOpen={activeModal === "privacy"}
         onClose={() => setActiveModal("none")}
+        className="legal-modal"
       >
         <h3>Политика конфиденциальности</h3>
 
@@ -794,6 +816,7 @@ export function SettingsScreen({
       <ModalSheet
         isOpen={activeModal === "terms"}
         onClose={() => setActiveModal("none")}
+        className="legal-modal"
       >
         <h3>Пользовательское соглашение</h3>
 

@@ -1,3 +1,4 @@
+import { displayTime } from "../time";
 import React from "react";
 import { ScheduleEvent, AttackRecord, NoteRecord, TimelineItem } from "../types";
 import {
@@ -154,7 +155,7 @@ export function MyDayScreen({
               {/* Text */}
               <div className="t">
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "2px" }}>
-                  <b>{item.time}</b>
+                  <b>{displayTime(item.time)}</b>
                   {isSchedule && (
                     <span
                       className={`status-chip ${

@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { LungLogo } from "./Icons";
 import { ModalSheet } from "./ModalSheet";
+import type { AppSettings } from "../types";
 
 interface OnboardingModalProps {
   isOpen?: boolean;
   onComplete: () => void;
+  language: AppSettings["language"];
+  onLanguageChange: (language: AppSettings["language"]) => void;
 }
 
-export function OnboardingModal({ isOpen = true, onComplete }: OnboardingModalProps) {
+export function OnboardingModal({ isOpen = true, onComplete, language, onLanguageChange }: OnboardingModalProps) {
   const [step, setStep] = useState(0);
 
   const steps = [
@@ -94,19 +97,21 @@ export function OnboardingModal({ isOpen = true, onComplete }: OnboardingModalPr
     <ModalSheet
       isOpen={isOpen}
       onClose={onComplete}
+      className="onboarding-modal"
       sheetStyle={{ textAlign: "center", paddingBottom: "32px" }}
     >
-      <span
-        className="m3-chip m3-chip-tonal"
-        style={{
-          marginBottom: "16px",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-        }}
-      >
-        {current.badge}
-      </span>
-
+      <div className="onboarding-top-row">
+        <span
+          className="m3-chip m3-chip-tonal"
+          style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+        >
+          {current.badge}
+        </span>
+        <div className="language-switch compact" role="group" aria-label="Language / Язык">
+          <button type="button" className={language === "ru" ? "selected" : ""} onClick={() => onLanguageChange("ru")} aria-pressed={language === "ru"}>RU</button>
+          <button type="button" className={language === "en" ? "selected" : ""} onClick={() => onLanguageChange("en")} aria-pressed={language === "en"}>EN</button>
+        </div>
+      </div>
       {current.icon}
 
       <h3 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "8px" }}>

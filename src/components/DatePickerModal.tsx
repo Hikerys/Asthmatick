@@ -1,3 +1,4 @@
+import { currentLocale } from "../i18n";
 import React, { useState, useEffect } from "react";
 import { ModalSheet } from "./ModalSheet";
 import { formatDateKey, getIsoDayOfWeek } from "../storage";
@@ -99,7 +100,7 @@ export function DatePickerModal({
     onClose();
   };
 
-  const formattedSelectedRu = selectedDate.toLocaleDateString("ru-RU", {
+  const formattedSelectedRu = selectedDate.toLocaleDateString(currentLocale(), {
     day: "numeric",
     month: "long",
     year: "numeric",

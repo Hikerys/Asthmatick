@@ -1,3 +1,5 @@
+import { displayTime } from "../time";
+import { currentLocale } from "../i18n";
 import React, { useState } from "react";
 import { ScheduleEvent, AttackRecord, NoteRecord, TimelineItem } from "../types";
 import {
@@ -140,7 +142,7 @@ export function CalendarScreen({
   const worstSeveritySelected = getWorstSeverityForDate(selectedDateStr, attacks);
 
   const isSelectedToday = selectedDateStr === todayStr;
-  const monthNameRu = selectedDate.toLocaleDateString("ru-RU", { month: "long" });
+  const monthNameRu = selectedDate.toLocaleDateString(currentLocale(), { month: "long" });
   const dateHeading = isSelectedToday
     ? `Сегодня, ${selectedDate.getDate()} ${monthNameRu}`
     : `${selectedDate.getDate()} ${monthNameRu}`;
@@ -299,7 +301,7 @@ export function CalendarScreen({
 
                 <div className="t">
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "2px" }}>
-                    <b>{item.time}</b>
+                    <b>{displayTime(item.time)}</b>
                     {isSchedule && (
                       <span
                         className={`status-chip ${
