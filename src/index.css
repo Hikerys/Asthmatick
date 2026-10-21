@@ -335,6 +335,7 @@ main {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  color: var(--teal);
   --lf: none;
   --ls: var(--teal);
 }
@@ -546,6 +547,18 @@ body.dark .card .t em.sev-heavy {
 }
 
 /* Decorative Watermark & Wave */
+.home-decor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#home {
+  z-index: 1;
+}
+
 .wm {
   position: absolute;
   left: 12px;
@@ -563,13 +576,21 @@ body.dark .card .t em.sev-heavy {
   position: absolute;
   left: -10%;
   right: -10%;
-  bottom: -40px;
+  bottom: 0;
+  height: 100px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wave::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 -40px;
   height: 140px;
   border-radius: 50% 50% 0 0;
   background: var(--tint);
   opacity: .45;
-  pointer-events: none;
-  z-index: 1;
 }
 
 /* ========================================================
@@ -1181,6 +1202,10 @@ nav button.on .m3-nav-label, .m3-nav-item.on .m3-nav-label {
   outline: none;
   transition: border-color .2s, box-shadow .2s;
   user-select: auto;
+}
+
+.form-textarea {
+  resize: vertical;
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {

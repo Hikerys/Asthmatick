@@ -1,5 +1,6 @@
 import { displayTime } from "../time";
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
+import { Moon, Sun, Sunrise, Sunset } from "lucide-react";
 import { ScheduleEvent, AttackRecord, NoteRecord, TimelineItem } from "../types";
 import {
   InhalerIcon,
@@ -30,13 +31,15 @@ export function MyDayScreen({
   const today = new Date();
   const todayStr = formatDateKey(today);
   const currentIsoDay = getIsoDayOfWeek(today);
+  const screenRef = useRef<HTMLElement>(null);
 
   // Dynamic greeting based on current hour
   const hour = today.getHours();
   let greeting = "Добрый день!";
-  if (hour >= 5 && hour < 12) greeting = "Доброе утро!";
-  else if (hour >= 18 && hour < 23) greeting = "Добрый вечер!";
-  else if (hour >= 23 || hour < 5) greeting = "Доброй ночи!";
+  let GreetingIcon = Sun;
+  if (hour >= 5 && hour < 12) { greeting = "Доброе утро!"; GreetingIcon = Sunrise; }
+  else if (hour >= 18 && hour < 23) { greeting = "Добрый вечер!"; GreetingIcon = Sunset; }
+  else if (hour >= 23 || hour < 5) { greeting = "Доброй ночи!"; GreetingIcon = Moon; }
 
   // Build unified items list for today
   const items: TimelineItem[] = [];
@@ -102,13 +105,39 @@ export function MyDayScreen({
   // Sort items chronologically by time
   items.sort((a, b) => a.time.localeCompare(b.time));
 
+  useLayoutEffect(() => {
+    const screen = screenRef.current;
+    if (!screen) return;
+    const content = Array.from(screen.children).filter((child): child is HTMLElement =>
+      child instanceof HTMLElement && (child.classList.contains("greet") || child.classList.contains("card"))
+    );
+    const updateScroll = () => {
+      const paddingBottom = parseFloat(getComputedStyle(screen).paddingBottom) || 0;
+      const contentBottom = Math.max(0, ...content.map((child) =>
+        child.offsetTop + child.offsetHeight + (parseFloat(getComputedStyle(child).marginBottom) || 0)
+      )) + paddingBottom;
+      screen.style.overflowY = contentBottom > screen.clientHeight + 1 ? "auto" : "hidden";
+    };
+    const observer = new ResizeObserver(updateScroll);
+    observer.observe(screen);
+    content.forEach((child) => observer.observe(child));
+    updateScroll();
+    return () => observer.disconnect();
+  });
+
   return (
-    <section className="screen on" id="home">
-      {/* Greeting Banner */}
-      <div className="greet">
-        <svg viewBox="0 0 64 64">
+    <>
+      {/* Decorations stay anchored to the visible screen while the entries scroll. */}
+      <div className="home-decor" aria-hidden="true">
+        <svg className="wm" viewBox="0 0 64 64">
           <use href="#lungs" />
         </svg>
+        <div className="wave" />
+      </div>
+      <section className="screen on" id="home" ref={screenRef}>
+      {/* Greeting Banner */}
+      <div className="greet">
+        <GreetingIcon size={40} strokeWidth={1.8} aria-hidden="true" />
         <div>
           <b>{greeting}</b>
           <small>Следуйте плану — дышите легче</small>
@@ -215,11 +244,7 @@ export function MyDayScreen({
         })
       )}
 
-      {/* Decorative background watermark and wave */}
-      <svg className="wm" viewBox="0 0 64 64">
-        <use href="#lungs" />
-      </svg>
-      <div className="wave" />
-    </section>
+      </section>
+    </>
   );
 }
