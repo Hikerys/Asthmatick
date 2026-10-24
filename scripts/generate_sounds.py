@@ -109,7 +109,6 @@ if __name__ == '__main__':
     }
 
     out_dirs = [
-        os.path.join(os.path.dirname(__file__), '..', 'public', 'sounds'),
         os.path.join(os.path.dirname(__file__), '..', 'android', 'app', 'src', 'main', 'res', 'raw'),
     ]
 
